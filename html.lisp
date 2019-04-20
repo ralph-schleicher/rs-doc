@@ -223,7 +223,8 @@ of the generated HTML page.")
 
 (defun html-doc ()
   "Generate HTML."
-  (let ((html-template:*string-modifier* #'identity))
+  (let ((html-template:*string-modifier* #'identity)
+	(html-template:*ignore-empty-lines* t))
     (html-template:fill-and-print-template
      *html-template* (nconc (html-values) *html-values*)
      :stream *standard-output*))
