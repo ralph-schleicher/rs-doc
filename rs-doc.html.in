@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title><!-- TMPL_VAR TITLE --></title>
+  <style type="text/css">
+   *{margin:0;border:0;padding:0}
+   body{color:#000;background-color:#fff;font-family:sans-serif;padding:1em;min-width:46em}
+   a{color:inherit;background-color:transparent;text-decoration:none}
+   table{border-collapse:collapse}
+   div.title{padding:1em}
+   div.subtitle{padding:1em}
+   div.prologue{padding:1em}
+   div.epilogue{padding:1em}
+   span.category{color:#212121;font-style:italic}
+   span.symbol{color:#212121;font-weight:700}
+   span.lambda-list{color:#616161}
+   span.lambda-list-keyword{color:#388E3C}
+   span.parameter{color:#212121;font-style:italic}
+   span.method-specializers{color:#616161}
+   span.method-specializer{color:#212121}
+   div.contents{padding:1em}
+   div.contents-listing{padding:1em}
+   div.contents-listing ul{list-style-type:none}
+   @media all and (min-width:68em){div.contents-listing{column-count:2;column-gap:2em}}
+   div.definition{padding:1em}
+   div.signature{background-color:#F5F5F5;padding:1ex 1em}
+   table.signature td.symbol{text-align:left;vertical-align:baseline;white-space:nowrap;padding-right:.5em}
+   table.signature td.lambda-list{text-align:left;vertical-align:baseline;width:100%}
+   table.signature td.category{text-align:right;vertical-align:baseline;white-space:nowrap;padding-left:1.5em}
+   div.documentation{padding:1em}
+  </style>
+ </head>
+ <body>
+  <!-- TMPL_IF TITLE -->
+  <div class="title">
+   <h1><!-- TMPL_VAR TITLE --></h1>
+  </div>
+  <!-- /TMPL_IF -->
+  <!-- TMPL_IF SUBTITLE -->
+  <div class="subtitle">
+   <h2><!-- TMPL_VAR SUBTITLE --></h2>
+  </div>
+  <!-- /TMPL_IF -->
+  <!-- TMPL_IF PROLOGUE -->
+  <div class="prologue">
+   <pre><!-- TMPL_VAR PROLOGUE --></pre>
+  </div>
+  <!-- /TMPL_IF -->
+  <!-- TMPL_IF DICTIONARY -->
+  <div class="contents" id="contents">
+   <h2>Contents</h2>
+   <div class="contents-listing">
+    <ul>
+     <!-- TMPL_LOOP DICTIONARY -->
+     <li>
+      <a href="#_<!-- TMPL_VAR ID -->">
+       <span class="category"><!-- TMPL_VAR CATEGORY --></span>
+       <span class="symbol"><!-- TMPL_VAR SYMBOL --></span>
+       <!-- TMPL_IF METHOD-SPECIALIZERS -->
+       <span class="method-specializers"><!-- TMPL_VAR METHOD-SPECIALIZERS --></span>
+       <!-- /TMPL_IF -->
+      </a>
+     </li>
+     <!-- /TMPL_LOOP -->
+    </ul>
+   </div>
+  </div>
+  <!-- /TMPL_IF -->
+  <!-- TMPL_IF DICTIONARY -->
+  <div class="dictionary">
+   <!-- TMPL_LOOP DICTIONARY -->
+   <div class="definition" id="_<!-- TMPL_VAR ID -->">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol"><!-- TMPL_VAR SYMBOL --></span></a></td>
+	<td class="lambda-list"><span class="lambda-list"><!-- TMPL_VAR LAMBDA-LIST --></span></td>
+	<td class="category"><span class="category"><!-- TMPL_VAR CATEGORY --></span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre><!-- TMPL_VAR DOCUMENTATION --></pre>
+    </div>
+   </div>
+   <!-- /TMPL_LOOP -->
+  </div>
+  <!-- /TMPL_IF -->
+  <!-- TMPL_IF EPILOGUE -->
+  <div class="epilogue">
+   <pre><!-- TMPL_VAR EPILOGUE --></pre>
+  </div>
+  <!-- /TMPL_IF -->
+ </body>
+</html>
