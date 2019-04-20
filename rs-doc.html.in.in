@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title><!-- TMPL_VAR TITLE --></title>
+  <!-- TMPL_VAR CSS -->
+ </head>
+ <body>
+  <!-- TMPL_IF TITLE -->
+  <div class="title">
+   <h1><!-- TMPL_VAR TITLE --></h1>
+  </div>
+  <!-- /TMPL_IF -->
+
+  <!-- TMPL_IF SUBTITLE -->
+  <div class="subtitle">
+   <h2><!-- TMPL_VAR SUBTITLE --></h2>
+  </div>
+  <!-- /TMPL_IF -->
+
+  <!-- TMPL_IF PROLOGUE -->
+  <div class="prologue">
+   <pre><!-- TMPL_VAR PROLOGUE --></pre>
+  </div>
+  <!-- /TMPL_IF -->
+
+  <!-- TMPL_IF DICTIONARY -->
+  <div class="contents" id="contents">
+   <h2>Contents</h2>
+   <div class="contents-listing">
+    <ul>
+     <!-- TMPL_LOOP DICTIONARY -->
+     <li>
+      <a href="#_<!-- TMPL_VAR ID -->">
+       <span class="category"><!-- TMPL_VAR CATEGORY --></span>
+       <span class="symbol"><!-- TMPL_VAR SYMBOL --></span>
+       <!-- TMPL_IF METHOD-SPECIALIZERS -->
+       <span class="method-specializers"><!-- TMPL_VAR METHOD-SPECIALIZERS --></span>
+       <!-- /TMPL_IF -->
+      </a>
+     </li>
+     <!-- /TMPL_LOOP -->
+    </ul>
+   </div>
+  </div>
+  <!-- /TMPL_IF -->
+
+  <!-- TMPL_IF DICTIONARY -->
+  <div class="dictionary">
+   <!-- TMPL_LOOP DICTIONARY -->
+   <div class="definition" id="_<!-- TMPL_VAR ID -->">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol"><!-- TMPL_VAR SYMBOL --></span></a></td>
+	<td class="lambda-list"><span class="lambda-list"><!-- TMPL_VAR LAMBDA-LIST --></span></td>
+	<td class="category"><span class="category"><!-- TMPL_VAR CATEGORY --></span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre><!-- TMPL_VAR DOCUMENTATION --></pre>
+    </div>
+   </div>
+   <!-- /TMPL_LOOP -->
+  </div>
+  <!-- /TMPL_IF -->
+
+  <!-- TMPL_IF EPILOGUE -->
+  <div class="epilogue">
+   <pre><!-- TMPL_VAR EPILOGUE --></pre>
+  </div>
+  <!-- /TMPL_IF -->
+ </body>
+</html>

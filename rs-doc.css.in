@@ -1,0 +1,145 @@
+/* -*- mode: css -*- */
+
+@background: #F5F5F5; /* grey 100 */
+@foreground: #212121; /* grey 900 */
+@lambda-list: #616161; /* grey 700 */
+@lambda-list-keyword: #388E3C; /* green 700 */
+@parameter: @foreground;
+@method-specializer: @foreground;
+
+* {
+  margin: 0px;
+  border: 0px;
+  padding: 0px;
+}
+
+body {
+  color: black;
+  background-color: white;
+  font-family: sans-serif;
+  padding: 1em;
+  min-width: 40em + 2 * 3em;
+}
+
+a {
+  color: inherit;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+div.title {
+  padding: 1em;
+}
+
+div.subtitle {
+  padding: 1em;
+}
+
+div.prologue {
+  padding: 1em;
+}
+
+div.epilogue {
+  padding: 1em;
+}
+
+span.category {
+  color: @foreground;
+  font-style: italic;
+}
+
+span.symbol {
+  color: @foreground;
+  font-weight: bold;
+}
+
+span.lambda-list {
+  color: @lambda-list;
+}
+
+span.lambda-list-keyword {
+  color: @lambda-list-keyword;
+}
+
+span.parameter {
+  color: @parameter;
+  font-style: italic;
+}
+
+span.method-specializers {
+  color: @lambda-list;
+}
+
+span.method-specializer {
+  color: @method-specializer;
+}
+
+/*
+ * Table of Contents
+ */
+
+div.contents {
+  padding: 1em;
+}
+
+div.contents-listing {
+  padding: 1em;
+}
+
+div.contents-listing ul {
+  list-style-type: none;
+}
+
+/* (width - 8) / column-count = column-width */
+@media all and (min-width: 30em * 2 + 8em) {
+div.contents-listing {
+  column-count: 2;
+  column-gap: 2em;
+}}
+
+/*
+ * Dictionary Entries
+ */
+
+div.definition {
+  padding: 1em;
+}
+
+div.signature {
+  background-color: @background;
+  padding: 1ex 1em;
+}
+
+table.signature {
+
+  td.symbol {
+    text-align: left;
+    vertical-align: baseline;
+    white-space: nowrap;
+    /* An en-space between the symbol and the lambda list looks better
+       than a regular space character.  */
+    padding-right: 0.5em;
+  }
+
+  td.lambda-list {
+    text-align: left;
+    vertical-align: baseline;
+    width: 100%;
+  }
+
+  td.category {
+    text-align: right;
+    vertical-align: baseline;
+    white-space: nowrap;
+    /* Clearly separate the category from the lambda list.  */
+    padding-left: 1.5em;
+  }
+}
+
+div.documentation {
+  padding: 1em;
+}

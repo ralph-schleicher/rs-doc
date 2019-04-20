@@ -1,0 +1,94 @@
+RS-DOC
+
+Yet another documentation generator.
+
+                                                                      [Function]
+generate-doc (&key package symbols include exclude sort-predicate title
+              subtitle prologue epilogue (print-case downcase) (output t)
+              (output-format text))
+   Generate documentation for Lisp symbols.
+   
+   Keyword argument PACKAGE denotes a package.  Value is either a
+    string designator or a package object.
+
+                                                              [Special Variable]
+*text-width*
+   Text width; value has to be at least 40.
+
+                                                              [Special Variable]
+*text-wrap*
+   Whether or not to wrap long lambda lists.
+
+                                                              [Special Variable]
+*text-indent*
+   Whether or not to indent the documentation.
+   Non-null is the number of characters.
+
+                                                              [Special Variable]
+*html-template*
+   The HTML template file.
+   
+   The template file is coded up by the user.  The ‘generate-doc’
+   function uses Edi Weitz's HTML-TEMPLATE library for filling in
+   the documentation strings.  Below is the list of template tags
+   together with their meaning.
+   
+   TMPL_VAR TITLE
+        Value of the TITLE keyword argument.
+   
+   TMPL_VAR SUBTITLE
+        Value of the SUBTITLE keyword argument.
+   
+   TMPL_VAR PROLOGUE
+        Value of the PROLOGUE keyword argument.
+   
+   TMPL_LOOP DICTIONARY
+        List of dictionary entries.
+   
+        TMPL_VAR ID
+             The named UUID of the dictionary entry.  Can be used as part
+             of an element identifier.  Please note that an UUID may start
+             with a decimal digit.
+   
+        TMPL_VAR CATEGORY
+             The symbol's category, for example, ‘Type’, ‘Variable’, or
+             ‘Function’.
+   
+        TMPL_VAR SYMBOL
+             The symbol name.
+   
+        TMPL_VAR LAMBDA-LIST
+             The symbol's lambda list.  Value is either nil or a string
+             with embedded HTML tags.  That is,
+   
+             <span class="parameter">foo</span>
+                  The parameter ‘foo’.
+   
+             <span class="lambda-list-keyword">&amp;key</span>
+                  The lambda list keyword ‘&key’.
+   
+             <span class="method-specializer">(eql 0)</span>
+                  The method specializer ‘(eql 0)’.  If the class name
+                  is t, the method specializer is omitted.
+   
+        TMPL_VAR METHOD-SPECIALIZERS
+             Like the symbol's lambda list above, but only listing the
+             method specializers (class name t is not omitted).
+   
+        TMPL_VAR DOCUMENTATION
+             The documentation string itself.
+   
+   TMPL_VAR EPILOGUE
+        Value of the EPILOGUE keyword argument.
+
+                                                              [Special Variable]
+*html-values*
+   Additional HTML template values.
+
+                                                              [Special Variable]
+*html-resources*
+   List of files required by the HTML template file.
+   For example, CSS style sheets or image files.
+   
+   The ‘generate-doc’ function will copy these files into the directory
+   of the generated HTML page.

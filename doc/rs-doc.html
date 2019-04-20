@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>RS-DOC</title>
+  <style type="text/css">
+   *{margin:0;border:0;padding:0}
+   body{color:#000;background-color:#fff;font-family:sans-serif;padding:1em;min-width:46em}
+   a{color:inherit;background-color:transparent;text-decoration:none}
+   table{border-collapse:collapse}
+   div.title{padding:1em}
+   div.subtitle{padding:1em}
+   div.prologue{padding:1em}
+   div.epilogue{padding:1em}
+   span.category{color:#212121;font-style:italic}
+   span.symbol{color:#212121;font-weight:700}
+   span.lambda-list{color:#616161}
+   span.lambda-list-keyword{color:#388E3C}
+   span.parameter{color:#212121;font-style:italic}
+   span.method-specializers{color:#616161}
+   span.method-specializer{color:#212121}
+   div.contents{padding:1em}
+   div.contents-listing{padding:1em}
+   div.contents-listing ul{list-style-type:none}
+   @media all and (min-width:68em){div.contents-listing{column-count:2;column-gap:2em}}
+   div.definition{padding:1em}
+   div.signature{background-color:#F5F5F5;padding:1ex 1em}
+   table.signature td.symbol{text-align:left;vertical-align:baseline;white-space:nowrap;padding-right:.5em}
+   table.signature td.lambda-list{text-align:left;vertical-align:baseline;width:100%}
+   table.signature td.category{text-align:right;vertical-align:baseline;white-space:nowrap;padding-left:1.5em}
+   div.documentation{padding:1em}
+  </style>
+ </head>
+ <body>
+  
+  <div class="title">
+   <h1>RS-DOC</h1>
+  </div>
+  
+
+  
+
+  
+  <div class="prologue">
+   <pre>Yet another documentation generator.</pre>
+  </div>
+  
+
+  
+  <div class="contents" id="contents">
+   <h2>Contents</h2>
+   <div class="contents-listing">
+    <ul>
+     
+     <li>
+      <a href="#_63E72251-8DA6-593D-A01E-0AE104B71E91">
+       <span class="category">Function</span>
+       <span class="symbol">generate-doc</span>
+       
+      </a>
+     </li>
+     
+     <li>
+      <a href="#_DA73840B-D43D-5EBA-A556-41438E2B1468">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*text-width*</span>
+       
+      </a>
+     </li>
+     
+     <li>
+      <a href="#_AF760EB0-0884-55D2-B774-0C936E8DAD91">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*text-wrap*</span>
+       
+      </a>
+     </li>
+     
+     <li>
+      <a href="#_A9EC9573-2DE2-571D-BD31-0CA40478E76B">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*text-indent*</span>
+       
+      </a>
+     </li>
+     
+     <li>
+      <a href="#_9852A986-BEC4-5EDD-824A-6BC5C9AAFAAB">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*html-template*</span>
+       
+      </a>
+     </li>
+     
+     <li>
+      <a href="#_F0D1B909-0E9B-5C22-BE94-54927FA017B0">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*html-values*</span>
+       
+      </a>
+     </li>
+     
+     <li>
+      <a href="#_22717CBE-0611-5C0E-B49F-C87F0998B6D4">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*html-resources*</span>
+       
+      </a>
+     </li>
+     
+    </ul>
+   </div>
+  </div>
+  
+
+  
+  <div class="dictionary">
+   
+   <div class="definition" id="_63E72251-8DA6-593D-A01E-0AE104B71E91">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">generate-doc</span></a></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class='lambda-list-keyword'>&amp;key</span> <span class='parameter'>package</span> <span class='parameter'>symbols</span> <span class='parameter'>include</span> <span class='parameter'>exclude</span> <span class='parameter'>sort-predicate</span> <span class='parameter'>title</span> <span class='parameter'>subtitle</span> <span class='parameter'>prologue</span> <span class='parameter'>epilogue</span> (<span class='parameter'>print-case</span> downcase) (<span class='parameter'>output</span> t) (<span class='parameter'>output-format</span> text))</span></td>
+	<td class="category"><span class="category">Function</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Generate documentation for Lisp symbols.
+
+Keyword argument PACKAGE denotes a package.  Value is either a
+ string designator or a package object.</pre>
+    </div>
+   </div>
+   
+   <div class="definition" id="_DA73840B-D43D-5EBA-A556-41438E2B1468">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*text-width*</span></a></td>
+	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Text width; value has to be at least 40.</pre>
+    </div>
+   </div>
+   
+   <div class="definition" id="_AF760EB0-0884-55D2-B774-0C936E8DAD91">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*text-wrap*</span></a></td>
+	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Whether or not to wrap long lambda lists.</pre>
+    </div>
+   </div>
+   
+   <div class="definition" id="_A9EC9573-2DE2-571D-BD31-0CA40478E76B">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*text-indent*</span></a></td>
+	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Whether or not to indent the documentation.
+Non-null is the number of characters.</pre>
+    </div>
+   </div>
+   
+   <div class="definition" id="_9852A986-BEC4-5EDD-824A-6BC5C9AAFAAB">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*html-template*</span></a></td>
+	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>The HTML template file.
+
+The template file is coded up by the user.  The &#x2018;generate-doc&#x2019;
+function uses Edi Weitz&#039;s HTML-TEMPLATE library for filling in
+the documentation strings.  Below is the list of template tags
+together with their meaning.
+
+TMPL_VAR TITLE
+     Value of the TITLE keyword argument.
+
+TMPL_VAR SUBTITLE
+     Value of the SUBTITLE keyword argument.
+
+TMPL_VAR PROLOGUE
+     Value of the PROLOGUE keyword argument.
+
+TMPL_LOOP DICTIONARY
+     List of dictionary entries.
+
+     TMPL_VAR ID
+          The named UUID of the dictionary entry.  Can be used as part
+          of an element identifier.  Please note that an UUID may start
+          with a decimal digit.
+
+     TMPL_VAR CATEGORY
+          The symbol&#039;s category, for example, &#x2018;Type&#x2019;, &#x2018;Variable&#x2019;, or
+          &#x2018;Function&#x2019;.
+
+     TMPL_VAR SYMBOL
+          The symbol name.
+
+     TMPL_VAR LAMBDA-LIST
+          The symbol&#039;s lambda list.  Value is either nil or a string
+          with embedded HTML tags.  That is,
+
+          &lt;span class=&quot;parameter&quot;&gt;foo&lt;/span&gt;
+               The parameter &#x2018;foo&#x2019;.
+
+          &lt;span class=&quot;lambda-list-keyword&quot;&gt;&amp;amp;key&lt;/span&gt;
+               The lambda list keyword &#x2018;&amp;key&#x2019;.
+
+          &lt;span class=&quot;method-specializer&quot;&gt;(eql 0)&lt;/span&gt;
+               The method specializer &#x2018;(eql 0)&#x2019;.  If the class name
+               is t, the method specializer is omitted.
+
+     TMPL_VAR METHOD-SPECIALIZERS
+          Like the symbol&#039;s lambda list above, but only listing the
+          method specializers (class name t is not omitted).
+
+     TMPL_VAR DOCUMENTATION
+          The documentation string itself.
+
+TMPL_VAR EPILOGUE
+     Value of the EPILOGUE keyword argument.</pre>
+    </div>
+   </div>
+   
+   <div class="definition" id="_F0D1B909-0E9B-5C22-BE94-54927FA017B0">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*html-values*</span></a></td>
+	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Additional HTML template values.</pre>
+    </div>
+   </div>
+   
+   <div class="definition" id="_22717CBE-0611-5C0E-B49F-C87F0998B6D4">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*html-resources*</span></a></td>
+	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>List of files required by the HTML template file.
+For example, CSS style sheets or image files.
+
+The &#x2018;generate-doc&#x2019; function will copy these files into the directory
+of the generated HTML page.</pre>
+    </div>
+   </div>
+   
+  </div>
+  
+
+  
+ </body>
+</html>
