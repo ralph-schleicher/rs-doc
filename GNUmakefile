@@ -44,15 +44,13 @@ all: rs-doc.html.in
 #       ...
 #      </style>
 #
-# When embedding the CSS style sheet, indent the code properly and add
-# a final newline character.
+# When embedding the CSS style sheet, indent the code properly.
 #
 # Also remove all empty lines in the HTML template.
 rs-doc.html.in: rs-doc.html.in.in rs-doc.css.min
 	{ \
 	  echo '<style type="text/css">' ; \
 	  cat rs-doc.css.min | sed -e 's/^/ /' ; \
-	  echo ; \
 	  echo '</style>' ; \
 	} | \
 	sed -e 's/^/  /' > temp.css
@@ -65,12 +63,14 @@ rs-doc.html.in: rs-doc.html.in.in rs-doc.css.min
 	rm -f temp.css
 	mv -f $@~ $@
 
+# Add a final newline character to the compressed style sheet.
 # The sed(1) script joins lines of the form
 #
 #      @media ...{...{...}
 #      }
 rs-doc.css.min: rs-doc.css.in
 	lessc --clean-css='--s1 -b' $< $@~
+	echo >> $@~
 	sed -i -e ':x /}$$/ { N; s/}\n}/}}/; bx }' $@~
 	mv -f $@~ $@
 
