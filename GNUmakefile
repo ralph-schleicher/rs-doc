@@ -46,6 +46,8 @@ all: rs-doc.html.in
 #
 # When embedding the CSS style sheet, indent the code properly and add
 # a final newline character.
+#
+# Also remove all empty lines in the HTML template.
 rs-doc.html.in: rs-doc.html.in.in rs-doc.css.min
 	{ \
 	  echo '<style type="text/css">' ; \
@@ -58,6 +60,7 @@ rs-doc.html.in: rs-doc.html.in.in rs-doc.css.min
 	    -e 'r temp.css' \
 	    -e 'd' \
 	    -e '}' \
+	    -e '/^$$/d' \
 	rs-doc.html.in.in > $@~
 	rm -f temp.css
 	mv -f $@~ $@
