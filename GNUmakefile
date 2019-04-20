@@ -68,7 +68,7 @@ rs-doc.html.in: rs-doc.html.in.in rs-doc.css.min
 #      }
 rs-doc.css.min: rs-doc.css.in
 	lessc --clean-css='--s1 -b' $< $@~
-	sed -i -e ':x /}$$/ { N; s/}\n}/}}/g ; bx }' $@~
+	sed -i -e ':x /}$$/ { N; s/}\n}/}}/; bx }' $@~
 	mv -f $@~ $@
 
 # Ditto without compression.
