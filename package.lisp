@@ -67,4 +67,4 @@ If OBJECT is an atom, return nil.
 Otherwise, return ‘(rest OBJECT)’."
   (if (atom object) nil (rest object)))
 
-;; package.lisp ends here
+;;; package.lisp ends here

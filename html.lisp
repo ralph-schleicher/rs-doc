@@ -245,4 +245,4 @@ of the generated HTML page.")
 	   (distinct (not (equal from (probe-file to)))))
 	(uiop:copy-file from to)))))
 
-;; html.lisp ends here
+;;; html.lisp ends here

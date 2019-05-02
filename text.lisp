@@ -97,4 +97,4 @@ Non-null is the number of characters.")
 	(write-string *epilogue*)
 	(terpri)))))
 
-;; text.lisp ends here
+;;; text.lisp ends here

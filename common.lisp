@@ -107,4 +107,4 @@ variable, or function respectively.  Otherwise, return KIND."
     (t
      kind)))
 
-;; common.lisp ends here
+;;; common.lisp ends here
