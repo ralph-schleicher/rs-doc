@@ -10,10 +10,16 @@ generate-doc (&key package symbols include exclude sort-predicate title
    
    Keyword argument PACKAGE denotes a package.  Value is either a
     string designator or a package object.
+   
+   Keyword argument TITLE is the title text.  Default is the package name
+   of the PACKAGE keyword argument.
+   
+   Keyword argument PROLOGUE is the prologue text.  Default is the
+   package documentation string of the PACKAGE keyword argument.
 
                                                               [Special Variable]
 *text-width*
-   Text width; value has to be at least 40.
+   The text width.  Value has to be at least 40.
 
                                                               [Special Variable]
 *text-wrap*
