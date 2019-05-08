@@ -87,7 +87,7 @@
 (defvar *id-namespace* (uuid:make-uuid-from-string "ed8931fc-9ce6-4b3d-9f51-2c0b2bd1ec71")
   "Namespace for creating a named UUID.")
 
-(defun make-doc (&key kind symbol lambda-list documentation method)
+(defun make-doc (&key category symbol lambda-list documentation method)
   "Create a new documentation item."
   ;; Create a named UUID for the documentation item.
   (flet ((write-symbol (symbol stream)
@@ -98,16 +98,16 @@
 	   (write-string (symbol-name symbol) stream)))
     (let ((id (uuid:make-v5-uuid *id-namespace*
 	       (with-output-to-string (stream)
-		 (write-string (symbol-name kind) stream)
+		 (write-string (symbol-name category) stream)
 		 (write-char #\: stream)
 		 (write-symbol symbol stream)
-		 (when (and (eq kind :method) method)
+		 (when (and (eq category :method) method)
 		   (dolist (specializer (method-specializers method))
 		     (write-char #\: stream)
 		     (write-symbol (class-name specializer) stream)))))))
       ;; Create the documentation item.
       (make-doc-item :id id
-		     :kind kind
+		     :category category
 		     :symbol symbol
 		     :lambda-list lambda-list
 		     :documentation documentation
@@ -116,34 +116,34 @@
 (defun get-doc (symbol)
   "Return all documentation items for SYMBOL as a list."
   (nconc
-   (alexandria:when-let ((kind (%typep symbol)))
+   (alexandria:when-let ((category (%typep symbol)))
      (list (make-doc
-	    :kind kind :symbol symbol
+	    :category category :symbol symbol
 	    :documentation (documentation symbol 'type))))
-   (alexandria:when-let ((kind (%variablep symbol)))
+   (alexandria:when-let ((category (%variablep symbol)))
      (list (make-doc
-	    :kind kind :symbol symbol
+	    :category category :symbol symbol
 	    :documentation (documentation symbol 'variable))))
-   (alexandria:when-let ((kind (%functionp symbol)))
+   (alexandria:when-let ((category (%functionp symbol)))
      (cons (make-doc
-	    :kind kind :symbol symbol
+	    :category category :symbol symbol
 	    :documentation (documentation symbol 'function)
 	    :lambda-list (%function-lambda-list (fdefinition symbol)))
 	   ;; TODO: Only return methods where the specialized lambda
 	   ;; list contains types listed in *SYMBOLS*.  Add an option
 	   ;; whether or not to include the generic function when the
 	   ;; number of methods is greater than zero.
-	   (when (eq kind :generic-function)
+	   (when (eq category :generic-function)
 	     (mapcar (lambda (method)
 		       (make-doc
-			:kind :method :symbol symbol
+			:category :method :symbol symbol
 			:documentation (or (documentation method t)
 					   (documentation symbol 'function))
 			:lambda-list (%method-lambda-list method)
 			:method method))
 		     (generic-function-methods (fdefinition symbol))))))))
 
-(defparameter *sort-order* (mapcar #'first *kind-alist*)
+(defparameter *sort-order* (mapcar #'first *category-alist*)
   "Order for sorting equal symbol names.")
 
 (export 'compare-doc-item)
@@ -151,18 +151,18 @@
   "Predicate for sorting dictionary entries."
   (let* ((sym-a (doc-item-symbol a))
 	 (name-a (symbol-name sym-a))
-	 (kind-a (doc-item-kind a))
-	 (pos-a (position kind-a *sort-order*))
+	 (category-a (doc-item-category a))
+	 (pos-a (position category-a *sort-order*))
 	 (sym-b (doc-item-symbol b))
 	 (name-b (symbol-name sym-b))
-	 (kind-b (doc-item-kind b))
-	 (pos-b (position kind-b *sort-order*)))
-    (cond ((and (eq (category kind-a) :type)
-		(eq (category kind-b) :type))
+	 (category-b (doc-item-category b))
+	 (pos-b (position category-b *sort-order*)))
+    (cond ((and (eq (namespace category-a) :type)
+		(eq (namespace category-b) :type))
 	   (or (< pos-a pos-b) (string-lessp name-a name-b)))
-	  ((eq (category kind-a) :type)
+	  ((eq (namespace category-a) :type)
 	   t)
-	  ((eq (category kind-b) :type)
+	  ((eq (namespace category-b) :type)
 	   nil)
 	  ((string-equal name-a name-b)
 	   (< pos-a pos-b))

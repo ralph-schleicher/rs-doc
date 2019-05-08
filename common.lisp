@@ -53,7 +53,7 @@
 ;; A documentation item.
 (defstruct doc-item
   (id nil :read-only t)
-  (kind nil :read-only t)
+  (category nil :read-only t)
   (symbol nil :read-only t)
   (lambda-list nil :read-only t)
   (documentation nil :read-only t)
@@ -61,10 +61,10 @@
   (method nil :read-only t))
 ;; Export these symbols so that the user can write its own
 ;; predicate function for sorting documentation items.
-(export '(doc-item-kind
+(export '(doc-item-category
 	  doc-item-symbol))
 
-(defparameter *kind-alist*
+(defparameter *category-alist*
   '((:package . "Package")
     ;; See ‘%typep’ function.
     (:condition . "Condition")
@@ -83,21 +83,21 @@
     (:method . "Method"))
   "Alist of symbol types.  List elements are cons cells of the form
 
-     (KIND . NAME)
+     (CATEGORY . NAME)
 
-where KIND is a keyword and NAME is a string.")
+where CATEGORY is a keyword and NAME is a string.")
 
-(defun kind-name (kind)
-  "Return the name of symbol type KIND."
-  (or (cdr (assoc kind *kind-alist*))
+(defun category-name (category)
+  "Return the name of symbol type CATEGORY."
+  (or (cdr (assoc category *category-alist*))
       (fixme)))
 
-(defun category (kind)
-  "Return the category of symbol type KIND.
+(defun namespace (category)
+  "Return the namespace of symbol type CATEGORY.
 
-Value is :type, :variable, or :function if KIND denotes a type,
-variable, or function respectively.  Otherwise, return KIND."
-  (case kind
+Value is :type, :variable, or :function if CATEGORY denotes a type,
+variable, or function respectively.  Otherwise, return CATEGORY."
+  (case category
     ((:condition :structure :class :type)
      :type)
     ((:constant :symbol-macro :special)
@@ -105,6 +105,6 @@ variable, or function respectively.  Otherwise, return KIND."
     ((:special-form :macro :function :generic-function :method)
      :function)
     (t
-     kind)))
+     category)))
 
 ;;; common.lisp ends here

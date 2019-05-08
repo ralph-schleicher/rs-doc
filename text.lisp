@@ -73,12 +73,12 @@ Non-null is the number of characters.")
 	(write-string *prologue*)
 	(terpri))
       (iter (for doc :in *dictionary*)
-	    (for kind = (doc-item-kind doc))
+	    (for category = (doc-item-category doc))
 	    (for symbol = (doc-item-symbol doc))
 	    (new-paragraph)
 	    (format t "~V<[~A]~>~%~A~:[~; ~:A~]~%"
-		    *text-width* (kind-name kind) symbol
-		    (eq (category kind) :function) (doc-item-lambda-list doc))
+		    *text-width* (category-name category) symbol
+		    (eq (namespace category) :function) (doc-item-lambda-list doc))
 	    (for text = (doc-item-documentation doc))
 	    (if (not indent)
 		(progn

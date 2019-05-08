@@ -189,17 +189,17 @@ of the generated HTML page.")
     (when *prologue*
       (push (list :prologue (esc *prologue*)) values))
     (let ((items (iter (for doc :in *dictionary*)
-		       (for kind = (doc-item-kind doc))
+		       (for category = (doc-item-category doc))
 		       (for symbol = (doc-item-symbol doc))
 		       (for text = (doc-item-documentation doc))
 		       (collect `(:id ,(doc-item-id doc)
 				  :symbol ,(esc symbol)
-				  :category ,(esc (kind-name kind))
-				  ,@(when (eq (category kind) :function)
+				  :category ,(esc (category-name category))
+				  ,@(when (eq (namespace category) :function)
 				      (list :lambda-list
 					    (html-lambda-list
 					     (doc-item-lambda-list doc))))
-				  ,@(when (eq kind :method)
+				  ,@(when (eq category :method)
 				      (list :method-specializers
 					    (html-method-specializers
 					     (method-specializers
