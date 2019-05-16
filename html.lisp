@@ -60,39 +60,118 @@ TMPL_LOOP DICTIONARY
 
      TMPL_VAR ID
           The named UUID of the dictionary entry.  Can be used as part
-          of an element identifier.  Please note that an UUID may start
-          with a decimal digit.
+          of an HTML element identifier.  Please note that an UUID may
+          start with a decimal digit.
+
+     TMPL_VAR NAMESPACE
+          The symbol's namespace.  Value is either ‘Type’, ‘Variable’,
+          or ‘Function’.  See also the IN-FOO-NAMESPACE conditionals
+          below.
+
+     TMPL_IF IN-TYPE-NAMESPACE
+     TMPL_IF IN-VARIABLE-NAMESPACE
+     TMPL_IF IN-FUNCTION-NAMESPACE
+          True if the symbol is defined in the type, variable, or
+          function namespace respectively.  These conditionals are
+          mutually exclusive.
 
      TMPL_VAR CATEGORY
-          The symbol's category, for example, ‘Type’, ‘Variable’, or
-          ‘Function’.
+          The symbol's category.  Value is either ‘Condition’,
+          ‘Structure’, ‘Class’, ‘Type’, ‘Constant’, ‘Symbol Macro’,
+          ‘Special Variable’, ‘Special Form’, ‘Macro’, ‘Function’,
+          ‘Generic Function’, or ‘Method’.  See also the IS-FOO
+          conditionals below.
+
+     TMPL_IF IS-CONDITION
+     TMPL_IF IS-STRUCTURE
+     TMPL_IF IS-CLASS
+     TMPL_IF IS-TYPE
+     TMPL_IF IS-CONSTANT
+     TMPL_IF IS-SYMBOL-MACRO
+     TMPL_IF IS-SPECIAL
+     TMPL_IF IS-SPECIAL-FORM
+     TMPL_IF IS-MACRO
+     TMPL_IF IS-FUNCTION
+     TMPL_IF IS-GENERIC-FUNCTION
+     TMPL_IF IS-METHOD
+          True if the dictionary entry documents a condition,
+          structure, class, type specifier, constant, symbol macro,
+          special variable, special form, macro, function, generic
+          function or method respectively.  These conditionals are
+          mutually exclusive.
+
+     TMPL_VAR PACKAGE
+          The symbol's package name.  This tag can be used as a
+          conditional, too.  False means that the symbol has no
+          home package.
 
      TMPL_VAR SYMBOL
           The symbol name.
 
-     TMPL_VAR LAMBDA-LIST
-          The symbol's lambda list.  Value is either nil or a string
-          with embedded HTML tags.  That is,
+     TMPL_LOOP LAMBDA-LIST
+          The symbol's lambda list.
 
-          <span class=\"parameter\">foo</span>
-               The parameter ‘foo’.
+          TMPL_VAR LAMBDA-LIST-KEYWORD
+               True if the element is a lambda list keyword.  Value
+               is lambda list keyword, e.g. ‘&key’.  Otherwise, the
+               element is a parameter specifier.
 
-          <span class=\"lambda-list-keyword\">&amp;key</span>
-               The lambda list keyword ‘&key’.
+          TMPL_VAR KEYWORD
+               The explicit keyword name for a keyword parameter.
 
-          <span class=\"method-specializer\">(eql 0)</span>
-               The method specializer ‘(eql 0)’.  If the class name
-               is t, the method specializer is omitted.
+          TMPL_VAR VARIABLE
+               The variable name.
 
-     TMPL_VAR METHOD-SPECIALIZERS
-          Like the symbol's lambda list above, but only listing the
-          method specializers (class name t is not omitted).
+          TMPL_VAR INIT-FORM
+               The initialization form of a parameter specifier.
+
+          TMPL_VAR METHOD-SPECIALIZER
+               True if the element is a method specializer.  Value
+               is either a class name, e.g. ‘string’, or a ‘eql’
+               specializer, e.g. ‘(eql 0)’.  If the class name of
+               the method specializer is t, the value of the HTML
+               template variable METHOD-SPECIALIZER is false.
+
+          TMPL_IF IS-EQL-SPECIALIZER
+               True if the method specializer is an ‘eql’ specializer.
+
+          TMPL_VAR EQL-SPECIALIZER-OBJECT
+               The ‘eql’ specializer object, e.g. ‘0’.
+
+     TMPL_LOOP METHOD-QUALIFIERS
+          List of method qualifiers.
+
+          TMPL_VAR METHOD-QUALIFIER
+               The method qualifier, e.g. ‘:around’ or ‘list’.
+
+          TMPL_VAR SEPARATOR
+               True if this is not the first element.  Value is a
+               single space character.
+
+     TMPL_LOOP METHOD-SPECIALIZERS
+          List of method specializers (class name t is not omitted).
+
+          TMPL_VAR METHOD-SPECIALIZER
+               The method specializer, for exmaple, ‘t’ or ‘(eql 0)’.
+
+          TMPL_IF IS-EQL-SPECIALIZER
+               True if the method specializer is an ‘eql’ specializer.
+
+          TMPL_VAR EQL-SPECIALIZER-OBJECT
+               The ‘eql’ specializer object, e.g. 0.
 
      TMPL_VAR DOCUMENTATION
           The documentation string itself.
 
 TMPL_VAR EPILOGUE
-     Value of the EPILOGUE keyword argument.")
+     Value of the EPILOGUE keyword argument.
+
+TMPL_VAR DOCUMENTATION-TOOL-NAME
+TMPL_VAR DOCUMENTATION-TOOL-DESCRIPTION
+TMPL_VAR DOCUMENTATION-TOOL-AUTHOR
+TMPL_VAR DOCUMENTATION-TOOL-LICENSE
+TMPL_VAR DOCUMENTATION-TOOL-VERSION
+     Information about the documentation tool.")
 
 (export '*html-values*)
 (defparameter *html-values* ()
@@ -106,78 +185,70 @@ For example, CSS style sheets or image files.
 The ‘generate-doc’ function will copy these files into the directory
 of the generated HTML page.")
 
+(defun dup (object)
+  (cond ((symbolp object)
+	 (%symbol-name object))
+	((atom object)
+	 object)
+	(t
+	 (mapcar #'dup object))))
+
 (defun str (object)
   (or (and (stringp object) object)
       (with-output-to-string (stream)
-	(princ object stream))))
+	(princ (dup object) stream))))
 
 (defun esc (object)
   (cl-who:escape-string (str object)))
 
-(defun element (tag attributes contents)
-  "Build a HTML element."
-  (cons (if (null attributes) tag (cons tag attributes)) contents))
+(defparameter *space* " "
+  "Non-null separator.")
 
-(defun span (class &rest contents)
-  "Create a ‘span’ element."
-  (element :span (list :class (str class)) contents))
+(defun html-lambda-list (lambda-list &optional separator)
+  (mapcar (lambda (object)
+	    (prog1
+		(cond ((member object lambda-list-keywords)
+		       (list :lambda-list-keyword (esc object)
+			     :separator separator))
+		      ((atom object)
+		       (list :variable (esc (%symbol-name object t))
+			     :separator separator))
+		      (t
+		       (list :variable (esc (%symbol-name (first object) t))
+			     :init-form (esc (second object))
+			     :separator separator)))
+	      (setf separator *space*)))
+	  lambda-list))
 
-(defun flatten (tree)
-  "Remove redundant list nesting."
-  (let (list)
-    (labels ((walk (object)
-               (cond ((null object))
-		     ((atom object)
-		      (push object list))
-		     ((or (keywordp (car object))
-			  (and (consp (car object))
-			       (keywordp (caar object))))
-		      ;; (:tag ...) or ((:tag ...) ...)
-		      (push (cons (car object) (flatten (cdr object))) list))
-		     (t
-		      (walk (car object))
-		      (walk (cdr object))))))
-      (walk tree))
-    (nreverse list)))
+(defun html-method-qualifiers (qualifiers &optional separator)
+  (mapcar (lambda (qualifier)
+	    (prog1
+		(list :method-qualifier (esc qualifier)
+		      :separator separator)
+	      (setf separator *space*)))
+	  qualifiers))
 
-(defparameter *space* " ")
+(defun html-method-specializers (specializers &optional separator)
+  (mapcar (lambda (specializer)
+	    (prog1
+		(list :method-specializer (esc specializer)
+		      :separator separator)
+	      (setf separator *space*)))
+	  specializers))
 
-(defun serialize (function objects &key (separator *space*))
-  (iter (with insert-separator)
-	(for object :in objects)
-	(when (and separator insert-separator)
-	  (collect separator))
-	(collect (funcall function object))
-	(setf insert-separator t)))
-
-(defun html-lambda-list (lambda-list)
-  (eval `(cl-who:with-html-output-to-string (stream)
-	   ,@(flatten
-	      (list "("
-		    (serialize
-		     (lambda (object)
-		       (cond ((member object lambda-list-keywords)
-			      (span :lambda-list-keyword (esc object)))
-			     ((atom object)
-			      (span :parameter (esc object)))
-			     (t
-			      (list "("
-				    (span :parameter (esc (first object)))
-				    *space*
-				    (serialize #'esc (rest object))
-				    ")"))))
-		     lambda-list)
-		    ")")))))
-
-(defun html-method-specializers (method-specializers)
-  (eval `(cl-who:with-html-output-to-string (stream)
-	   ,@(flatten
-	      (list "("
-		    (serialize
-		     (lambda (object)
-		       (span :method-specializer (esc object)))
-		     (mapcar #'class-name method-specializers))
-		    ")")))))
+(defun html-method-lambda-list (lambda-list specializers &optional separator)
+  (nconc (mapcar (lambda (object specializer)
+		   (prog1
+		       ;; OBJECT is already properly formatted.
+		       (if (atom object)
+			   (list :variable (esc (%symbol-name object t))
+				 :separator separator)
+			 (list :variable (esc (%symbol-name (first object) t))
+			       :method-specializer (esc specializer)
+			       :separator separator))
+		     (setf separator *space*)))
+		 lambda-list specializers)
+	 (nthcdr (length specializers) (html-lambda-list lambda-list *space*))))
 
 (defun html-values ()
   "HTML template values."
@@ -189,22 +260,33 @@ of the generated HTML page.")
     (when *prologue*
       (push (list :prologue (esc *prologue*)) values))
     (let ((items (iter (for doc :in *dictionary*)
-		       (for category = (doc-item-category doc))
-		       (for symbol = (doc-item-symbol doc))
-		       (for text = (doc-item-documentation doc))
-		       (collect `(:id ,(doc-item-id doc)
-				  :symbol ,(esc symbol)
+		       (for namespace = (get-doc-item doc :namespace))
+		       (for category = (get-doc-item doc :category))
+		       (for package = (get-doc-item doc :package))
+		       (for symbol = (get-doc-item doc :symbol))
+		       (collect `(:id ,(get-doc-item doc :id)
+				  :namespace ,(esc (namespace-name namespace))
+				  ,(make-keyword "IN-" namespace "-NAMESPACE") t
 				  :category ,(esc (category-name category))
-				  ,@(when (eq (namespace category) :function)
+				  ,(make-keyword "IS-" category) t
+				  :package ,(and package (esc (package-name package)))
+				  :symbol ,(esc symbol)
+				  ,@(when (eq namespace :function)
 				      (list :lambda-list
-					    (html-lambda-list
-					     (doc-item-lambda-list doc))))
+					    (if (eq category :method)
+						(html-method-lambda-list
+						 (get-doc-item doc :lambda-list)
+						 (get-doc-item doc :method-specializers))
+					      (html-lambda-list
+					       (get-doc-item doc :lambda-list)))))
 				  ,@(when (eq category :method)
-				      (list :method-specializers
+				      (list :method-qualifiers
+					    (html-method-qualifiers
+					     (get-doc-item doc :method-qualifiers))
+					    :method-specializers
 					    (html-method-specializers
-					     (method-specializers
-					      (doc-item-method doc)))))
-				  :documentation ,(esc text))))))
+					     (get-doc-item doc :method-specializers))))
+				  :documentation ,(esc (get-doc-item doc :documentation)))))))
       (push (list :dictionary items) values))
     (when *epilogue*
       (push (list :epilogue (esc *epilogue*)) values))

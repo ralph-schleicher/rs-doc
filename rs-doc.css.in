@@ -4,8 +4,6 @@
 @foreground: #212121; /* grey 900 */
 @lambda-list: #616161; /* grey 700 */
 @lambda-list-keyword: #388E3C; /* green 700 */
-@parameter: @foreground;
-@method-specializer: @foreground;
 
 * {
   margin: 0px;
@@ -52,9 +50,10 @@ span.category {
   font-style: italic;
 }
 
-span.symbol {
+span.package, span.symbol {
   color: @foreground;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 span.lambda-list {
@@ -63,11 +62,22 @@ span.lambda-list {
 
 span.lambda-list-keyword {
   color: @lambda-list-keyword;
+  white-space: nowrap;
 }
 
-span.parameter {
-  color: @parameter;
+span.keyword {
+  color: @foreground;
+  white-space: nowrap;
+}
+
+span.variable {
+  color: @foreground;
   font-style: italic;
+  white-space: nowrap;
+}
+
+span.init-form {
+  white-space: nowrap;
 }
 
 span.method-specializers {
@@ -75,7 +85,13 @@ span.method-specializers {
 }
 
 span.method-specializer {
-  color: @method-specializer;
+  color: @foreground;
+  white-space: nowrap;
+}
+
+span.method-qualifier {
+  color: @foreground;
+  white-space: nowrap;
 }
 
 /*

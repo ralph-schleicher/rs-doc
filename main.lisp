@@ -35,19 +35,44 @@
 
 (in-package :rs-doc)
 
+(defparameter *use-list* (list (find-package :common-lisp))
+  "List of accessible packages.")
+
+(defun %symbol-name (symbol &optional (use-list *use-list*))
+  "Return the symbol name of SYMBOL including the package prefix.
+The package prefix is omitted if the symbol's package is a member
+of optional argument USE-LIST. If USE-LIST is true, always omit
+the package prefix."
+  (let ((*package* (or (if (atom use-list)
+			   (symbol-package symbol)
+			 (first (member (symbol-package symbol) use-list :test #'eq)))
+		       (find-package :keyword))))
+    (prin1-to-string symbol)))
+
+(defun %externalp (symbol)
+  "True if SYMBOL is an exported symbol in its package."
+  (multiple-value-bind (found-symbol status)
+      (find-symbol (symbol-name symbol) (symbol-package symbol))
+    (and (eq found-symbol symbol) (eq status :external))))
+
 (defun %typep (symbol)
   "True if SYMBOL denotes a type."
-  (or (when (subtypep symbol 'condition)
-	:condition)
-      (alexandria:when-let ((class (find-class symbol nil)))
-	(cond ((typep class 'structure-class)
-	       :structure)
-	      ((typep class 'standard-class)
-	       :class)))
-      (and #+sbcl
-	   (sb-int:info :type :kind symbol)
-	   #-(or sbcl)
-	   (fixme)
+  (and (ignore-errors
+	;; Check if SYMBOL is a type specifier.
+	#+sbcl
+	(sb-int:info :type :kind symbol)
+	#-(or sbcl)
+	(subtypep symbol t))
+       (or (when (subtypep symbol 'condition)
+	     :condition)
+	   (alexandria:when-let ((class (find-class symbol nil)))
+	     (cond ((typep class 'structure-class)
+		    ;; All classes defined by means of ‘defstruct’ are
+		    ;; instances of the class ‘structure-class’.
+		    :structure)
+		   ((not (typep class 'built-in-class))
+		    :class)))
+	   ;; Any other type.
 	   :type)))
 
 (defun %variablep (symbol)
@@ -57,8 +82,7 @@
 
 (defun %functionp (symbol)
   "True if SYMBOL denotes a function."
-  (or (when (and (fboundp symbol)
-		 (typep (fdefinition symbol) 'standard-generic-function))
+  (or (when (and (fboundp symbol) (typep (fdefinition symbol) 'generic-function))
 	:generic-function)
       (first (member (function-information symbol)
 		     '(:special-form :macro :function)))))
@@ -67,80 +91,68 @@
   "Return the lambda list for function object FUNCTION."
   (trivial-arguments:arglist function))
 
-(defun %method-lambda-list (method)
-  "Return the specialized lambda list for method object METHOD."
-  (let ((lambda-list (method-lambda-list method))
-	(specializers (method-specializers method)))
-    (nconc (mapcar (lambda (parameter specializer)
-		     (let ((spec (class-name specializer)))
-		       (cond ((eq spec t)
-			      parameter)
-			     (t
-			      (list parameter spec)))))
-		   lambda-list specializers)
-	   (nthcdr (length specializers) lambda-list))))
+(defun %method-qualifiers (method)
+  "Return the method qualifiers for method object METHOD."
+  (method-qualifiers method))
 
 (defun %method-specializers (method)
   "Return the method specializers for method object METHOD."
-  (mapcar #'class-name (method-specializers method)))
+  (mapcar (lambda (specializer)
+	    (if (typep specializer 'closer-mop:eql-specializer)
+		(list 'eql (closer-mop:eql-specializer-object specializer))
+	      (class-name specializer)))
+	  (method-specializers method)))
 
-(defvar *id-namespace* (uuid:make-uuid-from-string "ed8931fc-9ce6-4b3d-9f51-2c0b2bd1ec71")
-  "Namespace for creating a named UUID.")
+(defun %method-lambda-list (method)
+  "Return the specialized lambda list for method object METHOD."
+  (let ((lambda-list (method-lambda-list method))
+	(specializers (%method-specializers method)))
+    (nconc (mapcar (lambda (parameter specializer)
+		     (if (eq specializer t)
+			 parameter
+		       (list parameter specializer)))
+		   lambda-list specializers)
+	   (nthcdr (length specializers) lambda-list))))
 
-(defun make-doc (&key category symbol lambda-list documentation method)
+(defun make-doc (category symbol documentation &rest properties)
   "Create a new documentation item."
-  ;; Create a named UUID for the documentation item.
-  (flet ((write-symbol (symbol stream)
-	   (write-string (or (alexandria:when-let
-				 ((package (symbol-package symbol)))
-			       (package-name package)) "") stream)
-	   (write-char #\: stream)
-	   (write-string (symbol-name symbol) stream)))
-    (let ((id (uuid:make-v5-uuid *id-namespace*
-	       (with-output-to-string (stream)
-		 (write-string (symbol-name category) stream)
-		 (write-char #\: stream)
-		 (write-symbol symbol stream)
-		 (when (and (eq category :method) method)
-		   (dolist (specializer (method-specializers method))
-		     (write-char #\: stream)
-		     (write-symbol (class-name specializer) stream)))))))
-      ;; Create the documentation item.
-      (make-doc-item :id id
-		     :category category
-		     :symbol symbol
-		     :lambda-list lambda-list
-		     :documentation documentation
-		     :method method))))
+  (let ((doc (make-doc-item
+	      :namespace (namespace category)
+	      :category category
+	      :package (symbol-package symbol)
+	      :symbol symbol
+	      :documentation documentation)))
+    (when properties
+      (apply #'set-doc-items doc properties))
+    (let ((namespace (get-doc-item doc :namespace))
+	  (signature (signature doc)))
+      (set-doc-items doc
+       :signature signature ;For information only.
+       :id (make-id signature)))
+    doc))
 
 (defun get-doc (symbol)
   "Return all documentation items for SYMBOL as a list."
   (nconc
    (alexandria:when-let ((category (%typep symbol)))
-     (list (make-doc
-	    :category category :symbol symbol
-	    :documentation (documentation symbol 'type))))
+     (list (make-doc category symbol (documentation symbol 'type))))
    (alexandria:when-let ((category (%variablep symbol)))
-     (list (make-doc
-	    :category category :symbol symbol
-	    :documentation (documentation symbol 'variable))))
+     (list (make-doc category symbol (documentation symbol 'variable))))
    (alexandria:when-let ((category (%functionp symbol)))
-     (cons (make-doc
-	    :category category :symbol symbol
-	    :documentation (documentation symbol 'function)
-	    :lambda-list (%function-lambda-list (fdefinition symbol)))
+     (cons (make-doc category symbol (documentation symbol 'function)
+		     :lambda-list (%function-lambda-list (fdefinition symbol)))
 	   ;; TODO: Only return methods where the specialized lambda
 	   ;; list contains types listed in *SYMBOLS*.  Add an option
 	   ;; whether or not to include the generic function when the
 	   ;; number of methods is greater than zero.
 	   (when (eq category :generic-function)
 	     (mapcar (lambda (method)
-		       (make-doc
-			:category :method :symbol symbol
-			:documentation (or (documentation method t)
-					   (documentation symbol 'function))
-			:lambda-list (%method-lambda-list method)
-			:method method))
+		       (make-doc :method symbol
+				 (or (documentation method t)
+				     (documentation symbol 'function))
+				 :lambda-list (%method-lambda-list method)
+				 :method-qualifiers (%method-qualifiers method)
+				 :method-specializers (%method-specializers method)))
 		     (generic-function-methods (fdefinition symbol))))))))
 
 (defparameter *sort-order* (mapcar #'first *category-alist*)
@@ -170,7 +182,9 @@
 
 (export 'generate-doc)
 (defun generate-doc (&key
-		       package symbols include exclude sort-predicate
+		       package symbols include exclude
+		       (generic-functions t) (methods t)
+		       sort-predicate
 		       title subtitle prologue epilogue (print-case :downcase)
 		       (output t) (output-format :text))
   "Generate documentation for Lisp symbols.
@@ -210,6 +224,12 @@ package documentation string of the PACKAGE keyword argument."
   (setf *dictionary* (mapcan #'get-doc symbols))
   ;; Remove undocumented elements.
   (setf *dictionary* (delete nil *dictionary* :key #'doc-item-documentation))
+  ;; Optionally remove generic functions and/or methods.
+  (when (not generic-functions)
+    (setf *dictionary* (delete nil *dictionary* :key (lambda (doc) (not (eq (get-doc-item doc :category) :generic-function))))))
+  (when (not methods)
+    (setf *dictionary* (delete nil *dictionary* :key (lambda (doc) (not (eq (get-doc-item doc :category) :method))))))
+  ;; Sort documentation items.
   (when sort-predicate
     (setf *dictionary* (stable-sort *dictionary* sort-predicate)))
   ;; Generate output.
@@ -233,6 +253,12 @@ package documentation string of the PACKAGE keyword argument."
 			    (and (packagep package)
 				 (documentation package t))))
 	    (*epilogue* epilogue)
+	    (*use-list* (let ((use-list (copy-list *use-list*)))
+			  (and package (pushnew package use-list))
+			  (iter (for doc :in *dictionary*)
+				(for p = (get-doc-item doc :package))
+				(and p (pushnew p use-list)))
+			  use-list))
 	    (*print-case* print-case)
 	    (*print-escape* nil))
 	(cond ((eq output t)
