@@ -194,4 +194,18 @@ and return a keyword with this name."
   (intern (apply #'concatenate 'string (mapcar #'string strings))
 	  (find-package :keyword)))
 
+(defparameter *use-list* (list (find-package :common-lisp))
+  "List of accessible packages.")
+
+(defun %symbol-name (symbol &optional (use-list *use-list*))
+  "Return the symbol name of SYMBOL including the package prefix.
+The package prefix is omitted if the symbol's package is a member
+of optional argument USE-LIST. If USE-LIST is true, always omit
+the package prefix."
+  (let ((*package* (or (if (atom use-list)
+			   (symbol-package symbol)
+			 (first (member (symbol-package symbol) use-list :test #'eq)))
+		       (find-package :keyword))))
+    (prin1-to-string symbol)))
+
 ;;; common.lisp ends here
