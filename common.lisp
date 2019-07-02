@@ -99,7 +99,7 @@ variable, or function respectively.  Otherwise, return CATEGORY."
     (:function . "Function"))
   "Alist of namespaces.  List elements are cons cells of the form
 
-     (namespace . NAME)
+     (NAMESPACE . NAME)
 
 where NAMESPACE is a keyword and NAME is a string.")
 
@@ -200,7 +200,7 @@ and return a keyword with this name."
 (defun %symbol-name (symbol &optional (use-list *use-list*))
   "Return the symbol name of SYMBOL including the package prefix.
 The package prefix is omitted if the symbol's package is a member
-of optional argument USE-LIST. If USE-LIST is true, always omit
+of optional argument USE-LIST.  If USE-LIST is true, always omit
 the package prefix."
   (let ((*package* (or (if (atom use-list)
 			   (symbol-package symbol)
