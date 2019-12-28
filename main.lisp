@@ -175,14 +175,33 @@
 		       (output t) (output-format :text))
   "Generate documentation for Lisp symbols.
 
-Keyword argument PACKAGE denotes a package.  Value is either a
- string designator or a package object.
-
-Keyword argument TITLE is the title text.  Default is the package name
-of the PACKAGE keyword argument.
-
+Keyword argument PACKAGE denotes a package.  Value is either a string
+ designator or a package object.
+Keyword argument SYMBOLS is a list of symbols to be documented.
+ Null means to document all external symbols of PACKAGE.
+Keyword argument INCLUDE is a list of additionals symbols to be
+ documented.
+Keyword argument EXCLUDE is a list of symbols not to be documented.
+Keyword argument GENERIC-FUNCTIONS determines whether or not to
+ document generic functions, too.  Enabled by default.
+Keyword argument METHODS determines whether or not to document
+ methods, too.  Enabled by default.
+Keyword argument SORT-PREDICATE is a predicate function for sorting
+ documentation items.
+Keyword argument TITLE is the title text.  Default is the package
+ name of PACKAGE.
+Keyword argument SUBTITLE is the subtitle text.  Default is empty.
 Keyword argument PROLOGUE is the prologue text.  Default is the
-package documentation string of the PACKAGE keyword argument."
+ package documentation string of PACKAGE.
+Keyword argument EPILOGUE is the epilogue text.  Default is empty.
+Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
+ printing symbol names.
+Keyword argument OUTPUT is the output destination.  Value is either
+ an output stream, a pathname, or a string.  A value of ‘t’ means
+ ‘*standard-output*’ and ‘nil’ means to return a new string.  Default
+ is ‘t’.
+Keyword argument OUTPUT-FORMAT is the output file format.  Value is
+ either :text or :html.  Default is to generate plain text."
   ;; Resolve package.
   (unless (or (null package) (packagep package))
     (let ((tem (find-package package)))
