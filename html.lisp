@@ -199,7 +199,7 @@ of the generated HTML page.")
 	(princ (dup object) stream))))
 
 (defun esc (object)
-  (cl-who:escape-string (str object)))
+  (cl-who:escape-string-minimal (str object)))
 
 (defparameter *space* " "
   "Non-null separator.")
