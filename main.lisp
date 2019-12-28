@@ -183,9 +183,16 @@ Keyword argument INCLUDE is a list of additionals symbols to be
  documented.
 Keyword argument EXCLUDE is a list of symbols not to be documented.
 Keyword argument GENERIC-FUNCTIONS determines whether or not to
- document generic functions, too.  Enabled by default.
+ document generic functions.  A value of t means to include all
+ generic functions, nil means to exclude all generic functions, a
+ list of symbols means to include the listed generic functions, a
+ list starting with the symbol ‘not’ means to exclude the listed
+ generic functions.  Default is to include all generic functions.
 Keyword argument METHODS determines whether or not to document
- methods, too.  Enabled by default.
+ methods.  A value of t means to include all methods, nil means to
+ exclude all methods, a list of symbols means to include the listed
+ methods, a list starting with the symbol ‘not’ means to exclude the
+ listed methods.  Default is to include all methods.
 Keyword argument SORT-PREDICATE is a predicate function for sorting
  documentation items.
 Keyword argument TITLE is the title text.  Default is the package
@@ -197,9 +204,9 @@ Keyword argument EPILOGUE is the epilogue text.  Default is empty.
 Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
  printing symbol names.
 Keyword argument OUTPUT is the output destination.  Value is either
- an output stream, a pathname, or a string.  A value of ‘t’ means
- ‘*standard-output*’ and ‘nil’ means to return a new string.  Default
- is ‘t’.
+ an output stream, a pathname, or a string.  A value of t is equal
+ to ‘*standard-output*’ and nil means to return a new string.
+ Default  is t.
 Keyword argument OUTPUT-FORMAT is the output file format.  Value is
  either :text or :html.  Default is to generate plain text."
   ;; Resolve package.
@@ -230,10 +237,34 @@ Keyword argument OUTPUT-FORMAT is the output file format.  Value is
   ;; Remove undocumented elements.
   (setf *dictionary* (delete nil *dictionary* :key #'doc-item-documentation))
   ;; Optionally remove generic functions and/or methods.
-  (when (not generic-functions)
-    (setf *dictionary* (delete nil *dictionary* :key (lambda (doc) (not (eq (get-doc-item doc :category) :generic-function))))))
-  (when (not methods)
-    (setf *dictionary* (delete nil *dictionary* :key (lambda (doc) (not (eq (get-doc-item doc :category) :method))))))
+  (cond ((null generic-functions)
+	 (setf *dictionary* (delete t *dictionary* :key (lambda (doc)
+							  (and (eq (get-doc-item doc :category) :generic-function)
+							       t)))))
+	((and (consp generic-functions) (eq (car generic-functions) 'not))
+	 (setf *dictionary* (delete t *dictionary* :key (lambda (doc)
+							  (and (eq (get-doc-item doc :category) :generic-function)
+							       (member (get-doc-item doc :symbol) (rest generic-functions))
+							       t)))))
+	((consp generic-functions)
+	 (setf *dictionary* (delete t *dictionary* :key (lambda (doc)
+							  (and (eq (get-doc-item doc :category) :generic-function)
+							       (not (member (get-doc-item doc :symbol) generic-functions))
+							       t))))))
+  (cond ((null methods)
+	 (setf *dictionary* (delete t *dictionary* :key (lambda (doc)
+							  (and (eq (get-doc-item doc :category) :method)
+							       t)))))
+	((and (consp methods) (eq (car methods) 'not))
+	 (setf *dictionary* (delete t *dictionary* :key (lambda (doc)
+							  (and (eq (get-doc-item doc :category) :method)
+							       (member (get-doc-item doc :symbol) (rest methods))
+							       t)))))
+	((consp methods)
+	 (setf *dictionary* (delete t *dictionary* :key (lambda (doc)
+							  (and (eq (get-doc-item doc :category) :method)
+							       (not (member (get-doc-item doc :symbol) methods))
+							       t))))))
   ;; Sort documentation items.
   (when sort-predicate
     (setf *dictionary* (stable-sort *dictionary* sort-predicate)))
