@@ -39,7 +39,7 @@
   :description "Yet another documentation generator."
   :author "Ralph Schleicher <rs@ralph-schleicher.de>"
   :license "Modified BSD License"
-  :version "0.1"
+  :version "1.0"
   :depends-on (:asdf
 	       :uiop
 	       :alexandria
