@@ -126,7 +126,11 @@
      (list (make-doc category symbol (documentation symbol 'variable))))
    (alexandria:when-let ((category (%functionp symbol)))
      (cons (make-doc category symbol (documentation symbol 'function)
-		     :lambda-list (%function-lambda-list (fdefinition symbol)))
+		     :lambda-list (%function-lambda-list
+				   #+sbcl
+				   symbol ;a function designator
+				   #-(or sbcl)
+				   (fdefinition symbol)))
 	   ;; TODO: Only return methods where the specialized lambda
 	   ;; list contains types listed in *SYMBOLS*.  Add an option
 	   ;; whether or not to include the generic function when the
