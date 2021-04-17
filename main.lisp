@@ -169,13 +169,14 @@
 	   (< pos-a pos-b))
 	  ((string-lessp name-a name-b)))))
 
-(defun generate-doc (&key
-		       package symbols include exclude
-		       (generic-functions t) (methods t)
-		       sort-predicate
-		       title subtitle prologue epilogue (print-case :downcase)
-		       (output t) (output-format :text))
-  "Generate documentation for Lisp symbols.
+(defun gather-doc (&key
+		     package symbols include exclude
+		     (generic-functions t) (methods t)
+		     sort-predicate
+		     title subtitle prologue epilogue
+		     (print-case :downcase)
+		   &allow-other-keys)
+  "Gather documentation for Lisp symbols.
 
 Keyword argument PACKAGE denotes a package.  Value is either a string
  designator or a package object.
@@ -205,12 +206,24 @@ Keyword argument PROLOGUE is the prologue text.  Default is the
 Keyword argument EPILOGUE is the epilogue text.  Default is empty.
 Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
  printing symbol names.
-Keyword argument OUTPUT is the output destination.  Value is either
- an output stream, a pathname, or a string.  A value of t is equal
- to ‘*standard-output*’ and nil means to return a new string.
- Default  is t.
-Keyword argument OUTPUT-FORMAT is the output file format.  Value is
- either :text or :html.  Default is to generate plain text."
+
+Return value is a documentation data structure (a plist) suitable
+for the ‘:data’ keyword argument of the ‘generate-doc’ function.
+
+If you want to create the same documentation in different output
+formats, then you can call the ‘gather-doc’ function once and pass
+the return value to ‘generate-doc’ with different output format
+parameters.  For example:
+
+     (let ((doc (gather-doc :package :foo)))
+       (generate-doc :data doc
+                     :output-format :text
+                     :output #P\"foo.txt\")
+       (generate-doc :data doc
+                     :output-format :html
+                     :output #P\"foo.html\"))
+
+This may save some processing time."
   ;; Resolve package.
   (unless (or (null package) (packagep package))
     (let ((tem (find-package package)))
@@ -270,35 +283,77 @@ Keyword argument OUTPUT-FORMAT is the output file format.  Value is
   ;; Sort documentation items.
   (when sort-predicate
     (setf *dictionary* (stable-sort *dictionary* sort-predicate)))
+  ;; Return value.
+  (let ((*title* (or title
+		     (and (packagep package)
+			  (package-name package))))
+	(*subtitle* subtitle)
+	(*prologue* (or prologue
+			(and (packagep package)
+			     (documentation package t))))
+	(*epilogue* epilogue)
+	(*use-list* (let ((use-list (copy-list *use-list*)))
+		      (and package (pushnew package use-list))
+		      (iter (for doc :in *dictionary*)
+			    (for p = (get-doc-item doc :package))
+			    (and p (pushnew p use-list)))
+		      use-list)))
+    `(:title ,*title*
+      :subtitle ,*subtitle*
+      :prologue ,*prologue*
+      :epilogue ,*epilogue*
+      :print-case ,print-case
+      :dictionary ,*dictionary*
+      :use-list ,*use-list*)))
+
+(defun generate-doc (&rest
+		       arguments
+		     &key
+		       package symbols include exclude
+		       (generic-functions t) (methods t)
+		       sort-predicate
+		       title subtitle prologue epilogue
+		       (print-case :downcase print-case-supplied-p)
+		       data (output t) (output-format :text))
+  "Generate documentation for Lisp symbols.
+
+Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
+ GENERIC-FUNCTIONS, METHODS, SORT-PREDICATE, TITLE, SUBTITLE,
+ PROLOGUE, EPILOGUE, and PRINT-CASE are equal to the respective
+ keyword argument of the ‘gather-doc’ function.  However, these
+ parameters are only evaluated if the DATA keyword argument is
+ null.
+Keyword argument DATA is a documentation data structure as returned
+ by the ‘gather-doc’ function.
+Keyword argument OUTPUT is the output destination.  Value is either
+ an output stream, a pathname, or a string.  A value of t is equal
+ to ‘*standard-output*’ and nil means to return a new string.
+ Default  is t.
+Keyword argument OUTPUT-FORMAT is the output file format.  Value is
+ either :text or :html.  Default is to generate plain text."
+  (when (null data)
+    (setf data (apply #'gather-doc arguments)))
   ;; Generate output.
-  (labels ((ensure-dir (destination)
-	     (ignore-errors
-	      (ensure-directories-exist
-	       (make-pathname
-		:directory (pathname-directory (pathname destination))))))
-	   (generate ()
-	     (ecase output-format
-	       (:text
-		(text-doc))
-	       (:html
-		(html-doc)))))
-    (with-standard-io-syntax
-      (let ((*title* (or title
-			 (and (packagep package)
-			      (package-name package))))
-	    (*subtitle* subtitle)
-	    (*prologue* (or prologue
-			    (and (packagep package)
-				 (documentation package t))))
-	    (*epilogue* epilogue)
-	    (*use-list* (let ((use-list (copy-list *use-list*)))
-			  (and package (pushnew package use-list))
-			  (iter (for doc :in *dictionary*)
-				(for p = (get-doc-item doc :package))
-				(and p (pushnew p use-list)))
-			  use-list))
-	    (*print-case* print-case)
-	    (*print-escape* nil))
+  (with-standard-io-syntax
+    (let ((*title* (getf data :title))
+	  (*subtitle* (getf data :subtitle))
+	  (*prologue* (getf data :prologue))
+	  (*epilogue* (getf data :epilogue))
+	  (*dictionary* (getf data :dictionary))
+	  (*use-list* (getf data :use-list))
+	  (*print-case* (if print-case-supplied-p print-case (getf data :print-case)))
+	  (*print-escape* nil))
+      (labels ((ensure-dir (destination)
+		 (ignore-errors
+		  (ensure-directories-exist
+		   (make-pathname
+		    :directory (pathname-directory (pathname destination))))))
+	       (generate ()
+		 (ecase output-format
+		   (:text
+		    (text-doc))
+		   (:html
+		    (html-doc)))))
 	(cond ((eq output t)
 	       (ensure-dir *standard-output*)
 	       (generate))
