@@ -14,12 +14,15 @@
    div.prologue{padding:1em}
    div.epilogue{padding:1em}
    span.category{color:#212121;font-style:italic}
-   span.symbol{color:#212121;font-weight:700}
+   span.package,span.symbol{color:#212121;font-weight:700;white-space:nowrap}
    span.lambda-list{color:#616161}
-   span.lambda-list-keyword{color:#388E3C}
-   span.parameter{color:#212121;font-style:italic}
+   span.lambda-list-keyword{color:#388E3C;white-space:nowrap}
+   span.keyword{color:#212121;white-space:nowrap}
+   span.variable{color:#212121;font-style:italic;white-space:nowrap}
+   span.init-form{white-space:nowrap}
    span.method-specializers{color:#616161}
-   span.method-specializer{color:#212121}
+   span.method-specializer{color:#212121;white-space:nowrap}
+   span.method-qualifier{color:#212121;white-space:nowrap}
    div.contents{padding:1em}
    div.contents-listing{padding:1em}
    div.contents-listing ul{list-style-type:none}
@@ -43,6 +46,12 @@
    <h2>Contents</h2>
    <div class="contents-listing">
     <ul>
+     <li>
+      <a href="#_cc6619eb-2399-5c69-a57a-c896096435ff">
+       <span class="category">Function</span>
+       <span class="symbol">gather-doc</span>
+      </a>
+     </li>
      <li>
       <a href="#_63e72251-8da6-593d-a01e-0ae104b71e91">
        <span class="category">Function</span>
@@ -89,6 +98,74 @@
    </div>
   </div>
   <div class="dictionary">
+   <div class="definition" id="_cc6619eb-2399-5c69-a57a-c896096435ff">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">gather-doc</span></a></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
+	<td class="category"><span class="category">Function</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Gather documentation for Lisp symbols.
+
+Keyword argument PACKAGE denotes a package.  Value is either a string
+ designator or a package object.
+Keyword argument SYMBOLS is a list of symbols to be documented.
+ Null means to document all external symbols of PACKAGE.
+Keyword argument INCLUDE is a list of additionals symbols to be
+ documented.
+Keyword argument EXCLUDE is a list of symbols not to be documented.
+Keyword argument GENERIC-FUNCTIONS determines whether or not to
+ document generic functions.  A value of t means to include all
+ generic functions, nil means to exclude all generic functions, a
+ list of symbols means to include the listed generic functions, a
+ list starting with the symbol ‘not’ means to exclude the listed
+ generic functions.  Default is to include all generic functions.
+Keyword argument METHODS determines whether or not to document
+ methods.  A value of t means to include all methods, nil means to
+ exclude all methods, a list of symbols means to include the listed
+ methods, a list starting with the symbol ‘not’ means to exclude the
+ listed methods.  Default is to include all methods.
+Keyword argument SORT-PREDICATE is a predicate function for sorting
+ documentation items.
+Keyword argument TITLE is the title text.  Default is the package
+ name of PACKAGE.
+Keyword argument SUBTITLE is the subtitle text.  Default is empty.
+Keyword argument PROLOGUE is the prologue text.  Default is the
+ package documentation string of PACKAGE.
+Keyword argument EPILOGUE is the epilogue text.  Default is empty.
+Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
+ printing symbol names.
+
+Return value is a documentation data structure (a plist) suitable
+for the ‘:data’ keyword argument of the ‘generate-doc’ function.
+
+If you want to create the same documentation in different output
+formats, then you can call the ‘gather-doc’ function once and pass
+the return value to ‘generate-doc’ with different output format
+parameters.  For example:
+
+     (let ((doc (gather-doc :package :foo)))
+       (generate-doc :data doc
+                     :output-format :text
+                     :output #P"foo.txt")
+       (generate-doc :data doc
+                     :output-format :html
+                     :output #P"foo.html"))
+
+This may save some processing time.</pre>
+    </div>
+   </div>
    <div class="definition" id="_63e72251-8da6-593d-a01e-0ae104b71e91">
     <div class="signature">
      <table class="signature">
@@ -100,7 +177,7 @@
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">generate-doc</span></a></td>
-	<td class="lambda-list"><span class="lambda-list">(<span class='lambda-list-keyword'>&amp;key</span> <span class='parameter'>package</span> <span class='parameter'>symbols</span> <span class='parameter'>include</span> <span class='parameter'>exclude</span> <span class='parameter'>sort-predicate</span> <span class='parameter'>title</span> <span class='parameter'>subtitle</span> <span class='parameter'>prologue</span> <span class='parameter'>epilogue</span> (<span class='parameter'>print-case</span> downcase) (<span class='parameter'>output</span> t) (<span class='parameter'>output-format</span> text))</span></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">arguments</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="variable">data</span> (<span class="variable">output</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">output-format</span>&nbsp;<span class="init-form">:text</span>))</span></td>
 	<td class="category"><span class="category">Function</span></td>
        </tr>
       </tbody>
@@ -109,14 +186,20 @@
     <div class="documentation">
      <pre>Generate documentation for Lisp symbols.
 
-Keyword argument PACKAGE denotes a package.  Value is either a
- string designator or a package object.
-
-Keyword argument TITLE is the title text.  Default is the package name
-of the PACKAGE keyword argument.
-
-Keyword argument PROLOGUE is the prologue text.  Default is the
-package documentation string of the PACKAGE keyword argument.</pre>
+Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
+ GENERIC-FUNCTIONS, METHODS, SORT-PREDICATE, TITLE, SUBTITLE,
+ PROLOGUE, EPILOGUE, and PRINT-CASE are equal to the respective
+ keyword argument of the ‘gather-doc’ function.  However, these
+ parameters are only evaluated if the DATA keyword argument is
+ null.
+Keyword argument DATA is a documentation data structure as returned
+ by the ‘gather-doc’ function.
+Keyword argument OUTPUT is the output destination.  Value is either
+ an output stream, a pathname, or a string.  A value of t is equal
+ to ‘*standard-output*’ and nil means to return a new string.
+ Default  is t.
+Keyword argument OUTPUT-FORMAT is the output file format.  Value is
+ either :text or :html.  Default is to generate plain text.</pre>
     </div>
    </div>
    <div class="definition" id="_da73840b-d43d-5eba-a556-41438e2b1468">
@@ -130,7 +213,7 @@ package documentation string of the PACKAGE keyword argument.</pre>
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">*text-width*</span></a></td>
-	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="lambda-list"></td>
 	<td class="category"><span class="category">Special Variable</span></td>
        </tr>
       </tbody>
@@ -151,7 +234,7 @@ package documentation string of the PACKAGE keyword argument.</pre>
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">*text-wrap*</span></a></td>
-	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="lambda-list"></td>
 	<td class="category"><span class="category">Special Variable</span></td>
        </tr>
       </tbody>
@@ -172,7 +255,7 @@ package documentation string of the PACKAGE keyword argument.</pre>
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">*text-indent*</span></a></td>
-	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="lambda-list"></td>
 	<td class="category"><span class="category">Special Variable</span></td>
        </tr>
       </tbody>
@@ -194,7 +277,7 @@ Non-null is the number of characters.</pre>
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">*html-template*</span></a></td>
-	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="lambda-list"></td>
 	<td class="category"><span class="category">Special Variable</span></td>
        </tr>
       </tbody>
@@ -203,8 +286,8 @@ Non-null is the number of characters.</pre>
     <div class="documentation">
      <pre>The HTML template file.
 
-The template file is coded up by the user.  The &#x2018;generate-doc&#x2019;
-function uses Edi Weitz&#039;s HTML-TEMPLATE library for filling in
+The template file is coded up by the user.  The ‘generate-doc’
+function uses Edi Weitz's HTML-TEMPLATE library for filling in
 the documentation strings.  Below is the list of template tags
 together with their meaning.
 
@@ -222,39 +305,118 @@ TMPL_LOOP DICTIONARY
 
      TMPL_VAR ID
           The named UUID of the dictionary entry.  Can be used as part
-          of an element identifier.  Please note that an UUID may start
-          with a decimal digit.
+          of an HTML element identifier.  Please note that an UUID may
+          start with a decimal digit.
+
+     TMPL_VAR NAMESPACE
+          The symbol's namespace.  Value is either ‘Type’, ‘Variable’,
+          or ‘Function’.  See also the IN-FOO-NAMESPACE conditionals
+          below.
+
+     TMPL_IF IN-TYPE-NAMESPACE
+     TMPL_IF IN-VARIABLE-NAMESPACE
+     TMPL_IF IN-FUNCTION-NAMESPACE
+          True if the symbol is defined in the type, variable, or
+          function namespace respectively.  These conditionals are
+          mutually exclusive.
 
      TMPL_VAR CATEGORY
-          The symbol&#039;s category, for example, &#x2018;Type&#x2019;, &#x2018;Variable&#x2019;, or
-          &#x2018;Function&#x2019;.
+          The symbol's category.  Value is either ‘Condition’,
+          ‘Structure’, ‘Class’, ‘Type’, ‘Constant’, ‘Symbol Macro’,
+          ‘Special Variable’, ‘Special Form’, ‘Macro’, ‘Function’,
+          ‘Generic Function’, or ‘Method’.  See also the IS-FOO
+          conditionals below.
+
+     TMPL_IF IS-CONDITION
+     TMPL_IF IS-STRUCTURE
+     TMPL_IF IS-CLASS
+     TMPL_IF IS-TYPE
+     TMPL_IF IS-CONSTANT
+     TMPL_IF IS-SYMBOL-MACRO
+     TMPL_IF IS-SPECIAL
+     TMPL_IF IS-SPECIAL-FORM
+     TMPL_IF IS-MACRO
+     TMPL_IF IS-FUNCTION
+     TMPL_IF IS-GENERIC-FUNCTION
+     TMPL_IF IS-METHOD
+          True if the dictionary entry documents a condition,
+          structure, class, type specifier, constant, symbol macro,
+          special variable, special form, macro, function, generic
+          function or method respectively.  These conditionals are
+          mutually exclusive.
+
+     TMPL_VAR PACKAGE
+          The symbol's package name.  This tag can be used as a
+          conditional, too.  False means that the symbol has no
+          home package.
 
      TMPL_VAR SYMBOL
           The symbol name.
 
-     TMPL_VAR LAMBDA-LIST
-          The symbol&#039;s lambda list.  Value is either nil or a string
-          with embedded HTML tags.  That is,
+     TMPL_LOOP LAMBDA-LIST
+          The symbol's lambda list.
 
-          &lt;span class=&quot;parameter&quot;&gt;foo&lt;/span&gt;
-               The parameter &#x2018;foo&#x2019;.
+          TMPL_VAR LAMBDA-LIST-KEYWORD
+               True if the element is a lambda list keyword.  Value
+               is lambda list keyword, e.g. ‘&amp;key’.  Otherwise, the
+               element is a parameter specifier.
 
-          &lt;span class=&quot;lambda-list-keyword&quot;&gt;&amp;amp;key&lt;/span&gt;
-               The lambda list keyword &#x2018;&amp;key&#x2019;.
+          TMPL_VAR KEYWORD
+               The explicit keyword name for a keyword parameter.
 
-          &lt;span class=&quot;method-specializer&quot;&gt;(eql 0)&lt;/span&gt;
-               The method specializer &#x2018;(eql 0)&#x2019;.  If the class name
-               is t, the method specializer is omitted.
+          TMPL_VAR VARIABLE
+               The variable name.
 
-     TMPL_VAR METHOD-SPECIALIZERS
-          Like the symbol&#039;s lambda list above, but only listing the
-          method specializers (class name t is not omitted).
+          TMPL_VAR INIT-FORM
+               The initialization form of a parameter specifier.
+
+          TMPL_VAR METHOD-SPECIALIZER
+               True if the element is a method specializer.  Value
+               is either a class name, e.g. ‘string’, or a ‘eql’
+               specializer, e.g. ‘(eql 0)’.  If the class name of
+               the method specializer is t, the value of the HTML
+               template variable METHOD-SPECIALIZER is false.
+
+          TMPL_IF IS-EQL-SPECIALIZER
+               True if the method specializer is an ‘eql’ specializer.
+
+          TMPL_VAR EQL-SPECIALIZER-OBJECT
+               The ‘eql’ specializer object, e.g. ‘0’.
+
+     TMPL_LOOP METHOD-QUALIFIERS
+          List of method qualifiers.
+
+          TMPL_VAR METHOD-QUALIFIER
+               The method qualifier, e.g. ‘:around’ or ‘list’.
+
+          TMPL_VAR SEPARATOR
+               True if this is not the first element.  Value is a
+               single space character.
+
+     TMPL_LOOP METHOD-SPECIALIZERS
+          List of method specializers (class name t is not omitted).
+
+          TMPL_VAR METHOD-SPECIALIZER
+               The method specializer, for exmaple, ‘t’ or ‘(eql 0)’.
+
+          TMPL_IF IS-EQL-SPECIALIZER
+               True if the method specializer is an ‘eql’ specializer.
+
+          TMPL_VAR EQL-SPECIALIZER-OBJECT
+               The ‘eql’ specializer object, e.g. 0.
 
      TMPL_VAR DOCUMENTATION
           The documentation string itself.
 
 TMPL_VAR EPILOGUE
-     Value of the EPILOGUE keyword argument.</pre>
+     Value of the EPILOGUE keyword argument.
+
+TMPL_VAR DOCUMENTATION-TOOL-NAME
+TMPL_VAR DOCUMENTATION-TOOL-DESCRIPTION
+TMPL_VAR DOCUMENTATION-TOOL-AUTHOR
+TMPL_VAR DOCUMENTATION-TOOL-LICENSE
+TMPL_VAR DOCUMENTATION-TOOL-VERSION
+     Information about the documentation tool.</pre>
     </div>
    </div>
    <div class="definition" id="_f0d1b909-0e9b-5c22-be94-54927fa017b0">
@@ -268,7 +430,7 @@ TMPL_VAR EPILOGUE
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">*html-values*</span></a></td>
-	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="lambda-list"></td>
 	<td class="category"><span class="category">Special Variable</span></td>
        </tr>
       </tbody>
@@ -289,7 +451,7 @@ TMPL_VAR EPILOGUE
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">*html-resources*</span></a></td>
-	<td class="lambda-list"><span class="lambda-list"></span></td>
+	<td class="lambda-list"></td>
 	<td class="category"><span class="category">Special Variable</span></td>
        </tr>
       </tbody>
@@ -299,7 +461,7 @@ TMPL_VAR EPILOGUE
      <pre>List of files required by the HTML template file.
 For example, CSS style sheets or image files.
 
-The &#x2018;generate-doc&#x2019; function will copy these files into the directory
+The ‘generate-doc’ function will copy these files into the directory
 of the generated HTML page.</pre>
     </div>
    </div>
