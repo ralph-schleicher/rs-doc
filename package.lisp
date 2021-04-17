@@ -46,7 +46,8 @@
   (:import-from #:cl-environments
 		#:variable-information
 		#:function-information)
-  (:export #:generate-doc
+  (:export #:gather-doc
+	   #:generate-doc
 	   #:*text-width*
 	   #:*text-wrap*
 	   #:*text-indent*
