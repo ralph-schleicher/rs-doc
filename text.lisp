@@ -35,15 +35,12 @@
 
 (in-package :rs-doc)
 
-(export '*text-width*)
 (defparameter *text-width* 80
   "The text width.  Value has to be at least 40.")
 
-(export '*text-wrap*)
 (defparameter *text-wrap* t
   "Whether or not to wrap long lambda lists.")
 
-(export '*text-indent*)
 (defparameter *text-indent* 3
   "Whether or not to indent the documentation.
 Non-null is the number of characters.")

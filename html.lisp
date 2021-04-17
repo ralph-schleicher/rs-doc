@@ -35,7 +35,6 @@
 
 (in-package :rs-doc)
 
-(export '*html-template*)
 (defparameter *html-template* (merge-pathnames
 			       #P"rs-doc.html.in"
 			       (asdf:system-source-directory :rs-doc))
@@ -173,11 +172,9 @@ TMPL_VAR DOCUMENTATION-TOOL-LICENSE
 TMPL_VAR DOCUMENTATION-TOOL-VERSION
      Information about the documentation tool.")
 
-(export '*html-values*)
 (defparameter *html-values* ()
   "Additional HTML template values.")
 
-(export '*html-resources*)
 (defparameter *html-resources* ()
   "List of files required by the HTML template file.
 For example, CSS style sheets or image files.

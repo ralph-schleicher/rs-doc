@@ -46,6 +46,18 @@
   (:import-from #:cl-environments
 		#:variable-information
 		#:function-information)
+  (:export #:generate-doc
+	   #:*text-width*
+	   #:*text-wrap*
+	   #:*text-indent*
+	   #:*html-template*
+	   #:*html-values*
+	   #:*html-resources*
+	   ;; Export these symbols so that the user can write its own
+	   ;; predicate function for sorting documentation items.
+	   #:doc-item-category
+	   #:doc-item-symbol
+	   #:compare-doc-item)
   (:documentation "Yet another documentation generator."))
 
 (in-package :rs-doc)

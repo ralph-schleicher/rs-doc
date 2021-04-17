@@ -140,13 +140,9 @@ where NAMESPACE is a keyword and NAME is a string.")
 	(set-doc-item doc key value))
   doc)
 
-;; Export these symbols so that the user can write its own
-;; predicate function for sorting documentation items.
-(export 'doc-item-category)
 (defun doc-item-category (doc)
   (get-doc-item doc :category))
 
-(export 'doc-item-symbol)
 (defun doc-item-symbol (doc)
   (get-doc-item doc :symbol))
 

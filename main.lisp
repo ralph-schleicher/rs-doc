@@ -148,7 +148,6 @@
 (defparameter *sort-order* (mapcar #'first *category-alist*)
   "Order for sorting equal symbol names.")
 
-(export 'compare-doc-item)
 (defun compare-doc-item (a b)
   "Predicate for sorting dictionary entries."
   (let* ((sym-a (doc-item-symbol a))
@@ -170,7 +169,6 @@
 	   (< pos-a pos-b))
 	  ((string-lessp name-a name-b)))))
 
-(export 'generate-doc)
 (defun generate-doc (&key
 		       package symbols include exclude
 		       (generic-functions t) (methods t)
