@@ -33,6 +33,10 @@
 
 ## Code:
 
+PACKAGE := rs-doc
+VERSION := $(shell grep -h '^[ 	]*:version[ 	]' rs-doc.asd | sed -e 's/[^"]*"//' -e 's/".*//')
+TARNAME := $(PACKAGE)-$(VERSION)
+
 .PHONY: all
 all: rs-doc.html.in
 
@@ -85,5 +89,19 @@ clean:
 .PHONY: doc
 doc:
 	sbcl --non-interactive --load generate-doc.lisp
+
+### Maintenance
+
+.PHONY: tag
+tag: all
+	@if test 0 != `svn status -q | grep -v "^ " | wc -l` ; then \
+	    echo "Working copy is not clean" >&2 ; \
+	    exit 1 ; \
+	fi
+	@if svn info "^/tags/$(TARNAME)" > /dev/null 2>&1 ; then \
+	    echo "Tag already exists" >&2 ; \
+	    exit 1 ; \
+	fi
+	svn copy "^/trunk" "^/tags/$(TARNAME)" -m "Version $(VERSION)."
 
 ## GNUmakefile ends here
