@@ -112,8 +112,8 @@ TMPL_LOOP DICTIONARY
 
           TMPL_VAR LAMBDA-LIST-KEYWORD
                True if the element is a lambda list keyword.  Value
-               is lambda list keyword, e.g. ‘&key’.  Otherwise, the
-               element is a parameter specifier.
+               is the lambda list keyword, e.g. ‘&key’.  Otherwise,
+               the element is a parameter specifier.
 
           TMPL_VAR KEYWORD
                The explicit keyword name for a keyword parameter.
@@ -137,6 +137,10 @@ TMPL_LOOP DICTIONARY
           TMPL_VAR EQL-SPECIALIZER-OBJECT
                The ‘eql’ specializer object, e.g. ‘0’.
 
+          TMPL_VAR SEPARATOR
+               True if this is not the first element.  Value is a
+               single space character.
+
      TMPL_LOOP METHOD-QUALIFIERS
           List of method qualifiers.
 
@@ -158,6 +162,10 @@ TMPL_LOOP DICTIONARY
 
           TMPL_VAR EQL-SPECIALIZER-OBJECT
                The ‘eql’ specializer object, e.g. 0.
+
+          TMPL_VAR SEPARATOR
+               True if this is not the first element.  Value is a
+               single space character.
 
      TMPL_VAR DOCUMENTATION
           The documentation string itself.
