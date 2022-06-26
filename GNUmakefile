@@ -1,4 +1,4 @@
-## GNUmakefile --- build rules for RS-DOC.
+## GNUmakefile --- build rules for RS-DOC
 
 # Copyright (C) 2019 Ralph Schleicher
 
@@ -103,5 +103,9 @@ tag: all
 	    exit 1 ; \
 	fi
 	svn copy "^/trunk" "^/tags/$(TARNAME)" -m "Version $(VERSION)."
+
+.PHONY: sync
+sync: all
+	~/src/github/github.sh rs-doc
 
 ## GNUmakefile ends here

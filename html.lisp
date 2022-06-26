@@ -1,4 +1,4 @@
-;;; html.lisp --- HTML output format.
+;;; html.lisp --- HTML output format
 
 ;; Copyright (C) 2019 Ralph Schleicher
 

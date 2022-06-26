@@ -1,4 +1,4 @@
-;;; main.lisp --- entry point for the documentation generator.
+;;; main.lisp --- entry point for the documentation generator
 
 ;; Copyright (C) 2019 Ralph Schleicher
 

@@ -1,4 +1,4 @@
-;;; text.lisp --- plain text output format.
+;;; text.lisp --- plain text output format
 
 ;; Copyright (C) 2019 Ralph Schleicher
 

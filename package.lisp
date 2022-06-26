@@ -1,4 +1,4 @@
-;;; package.lisp --- package definition.
+;;; package.lisp --- package definition
 
 ;; Copyright (C) 2019 Ralph Schleicher
 

@@ -1,4 +1,4 @@
-;;; rs-doc.asd --- yet another documentation generator.
+;;; rs-doc.asd --- yet another documentation generator
 
 ;; Copyright (C) 2019 Ralph Schleicher
 

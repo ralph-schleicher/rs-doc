@@ -1,4 +1,4 @@
-;;; common.lisp --- common definitions for all output formats.
+;;; common.lisp --- common definitions for all output formats
 
 ;; Copyright (C) 2019 Ralph Schleicher
 
