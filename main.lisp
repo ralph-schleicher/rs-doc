@@ -328,7 +328,7 @@ Keyword argument DATA is a documentation data structure as returned
 Keyword argument OUTPUT is the output destination.  Value is either
  an output stream, a pathname, or a string.  A value of t is equal
  to ‘*standard-output*’ and nil means to return a new string.
- Default  is t.
+ Default is t.
 Keyword argument OUTPUT-FORMAT is the output file format.  Value is
  either :text or :html.  Default is to generate plain text."
   (when (null data)
