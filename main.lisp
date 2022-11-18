@@ -170,7 +170,7 @@
 	  ((string-lessp name-a name-b)))))
 
 (defun gather-doc (&key
-		     package symbols include exclude
+		     package symbols include exclude undocumented
 		     (generic-functions t) (methods t)
 		     sort-predicate
 		     title subtitle prologue epilogue
@@ -185,6 +185,12 @@ Keyword argument SYMBOLS is a list of symbols to be documented.
 Keyword argument INCLUDE is a list of additionals symbols to be
  documented.
 Keyword argument EXCLUDE is a list of symbols not to be documented.
+Keyword argument UNDOCUMENTED determines whether or not to document
+ undocumented symbols.  A value of nil means to exclude undocumented
+ symbols.  Any other value means to include undocumented symbols.  If
+ the value is a string, it will be used as the documentation string.
+ Otherwise, use the string ‘Not documented.’.  Default is to exclude
+ undocumented symbols.
 Keyword argument GENERIC-FUNCTIONS determines whether or not to
  document generic functions.  A value of t means to include all
  generic functions, nil means to exclude all generic functions, a
@@ -250,7 +256,12 @@ This may save some processing time."
   ;; Gather documentation strings.
   (setf *dictionary* (mapcan #'get-doc symbols))
   ;; Remove undocumented elements.
-  (setf *dictionary* (delete nil *dictionary* :key #'doc-item-documentation))
+  (if (null undocumented)
+      (setf *dictionary* (delete nil *dictionary* :key #'doc-item-documentation))
+    (let ((undocumented (if (stringp undocumented) undocumented "Not documented.")))
+      (iter (for doc :in *dictionary*)
+	    (when (null (get-doc-item doc :documentation))
+	      (set-doc-item doc :documentation undocumented)))))
   ;; Optionally remove generic functions and/or methods.
   (cond ((null generic-functions)
 	 (setf *dictionary* (delete t *dictionary* :key (lambda (doc)
@@ -309,7 +320,7 @@ This may save some processing time."
 (defun generate-doc (&rest
 		       arguments
 		     &key
-		       package symbols include exclude
+		       package symbols include exclude undocumented
 		       (generic-functions t) (methods t)
 		       sort-predicate
 		       title subtitle prologue epilogue
