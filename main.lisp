@@ -73,9 +73,9 @@
       (first (member (function-information symbol)
 		     '(:special-form :macro :function)))))
 
-(defun %function-lambda-list (function)
+(defun %function-lambda-list (function &optional recursivep)
   "Return the lambda list for function object FUNCTION."
-  (trivial-arguments:arglist function))
+  (canonical-lambda-list (trivial-arguments:arglist function) recursivep))
 
 (defun %method-qualifiers (method)
   "Return the method qualifiers for method object METHOD."
@@ -91,7 +91,7 @@
 
 (defun %method-lambda-list (method)
   "Return the specialized lambda list for method object METHOD."
-  (let ((lambda-list (method-lambda-list method))
+  (let ((lambda-list (canonical-lambda-list (method-lambda-list method) nil))
 	(specializers (%method-specializers method)))
     (nconc (mapcar (lambda (parameter specializer)
 		     (if (eq specializer t)
@@ -130,7 +130,8 @@
 				   #+sbcl
 				   symbol ;a function designator
 				   #-(or sbcl)
-				   (fdefinition symbol)))
+				   (fdefinition symbol)
+				   (eq category :macro)))
 	   ;; TODO: Only return methods where the specialized lambda
 	   ;; list contains types listed in *SYMBOLS*.  Add an option
 	   ;; whether or not to include the generic function when the
