@@ -204,4 +204,91 @@ the package prefix."
 		       (find-package :keyword))))
     (prin1-to-string symbol)))
 
+(defvar *lambda-list-init-form* nil
+  "Whether or not to include the initialization form
+for optional and keyword parameters.")
+
+(defun map-lambda-list (function lambda-list &optional recursivep separatorp)
+  "Map over the elements of a lambda list.
+
+First argument FUNCTION is the call-back function.  The calling
+ convention is documented below.
+Second argument LAMBDA-LIST is a lambda list.
+Optional third argument RECURSIVEP controls the interpretation of
+ a list as a required parameter.  True means it is an inner lambda
+ list of a macro or destructuring lambda list.  False means it is
+ a specialized parameter of a specialized lambda list.
+Optional fourth argument SEPARATORP is the initial value of the same
+ parameter of the call-back function.
+
+Value is the list of call-back function return values.
+
+The call-back function has a lambda list of the form
+
+     (ELEMENT CATEGORY SEPARATORP)
+
+First argument OBJECT is an element of the lambda list.
+Second argument CATEGORY is a keyword identifying the type of OBJECT.
+ Value is either ‘:keyword’ (a lambda list keyword), ‘:parameter’ (a
+ variable name), ‘:specialized-parameter’, ‘:optional-parameter’,
+ ‘:keyword-parameter’, ‘:auxiliary-variable’, or ‘:lambda-list’.
+Third argument SEPARATORP is true if OBJECT is not the first element."
+  (iter (with lambda-list-keyword)
+	(for object :in lambda-list)
+	(if (listp object)
+	    (cond ((null lambda-list-keyword)
+		   ;; A required parameter.
+		   (if recursivep
+		       ;; An inner lambda list.
+		       (collect (funcall function (map-lambda-list function object recursivep)
+					 :lambda-list separatorp))
+		     ;; A specialized parameter.
+		     (collect (funcall function object :specialized-parameter separatorp))))
+		  ((member lambda-list-keyword '(&optional &key &aux))
+		   ;; For optional and keyword parameters, reduce
+		   ;; ‘(VAR [INIT-FORM [SUPPLIEDP]])’ to VAR.
+		   (let ((variable (first object))
+			 (init-form (second object)))
+		     ;; For keyword parameters, further reduce
+		     ;; ‘(KEYWORD-NAME VAR)’ to KEYWORD-NAME.
+		     (when (consp variable)
+		       (setf variable (first variable)))
+		     ;; An optional or keyword parameter.
+		     (collect (if (and *lambda-list-init-form* init-form)
+				  (funcall function (list variable init-form)
+					   (ecase lambda-list-keyword
+					     (&optional
+					      :optional-parameter)
+					     (&key
+					      :keyword-parameter)
+					     (&aux
+					      :auxiliary-variable)) separatorp)
+				(funcall function variable :parameter separatorp)))))
+		  ((error 'program-error)))
+	  (cond ((eq object '&aux)
+		 (finish))
+		((member object lambda-list-keywords :test #'eq)
+		 ;; A lambda list keyword.
+		 (setf lambda-list-keyword object)
+		 (collect (funcall function object :keyword separatorp)))
+		((symbolp object)
+		 ;; A parameter.
+		 (collect (funcall function object :parameter separatorp))
+		 (when (eq lambda-list-keyword '&whole)
+		   ;; The next parameter is a required parameter.
+		   (setf lambda-list-keyword nil)))
+		((error 'program-error))))
+	(setf separatorp t)))
+
+(defun map-lambda-list-identity (object &rest rest)
+  "Identity call-back function for ‘map-lambda-list’."
+  (declare (ignore rest)) object)
+
+(defun canonical-lambda-list (lambda-list recursivep)
+  "Simplify a lambda list.
+
+   * Remove auxiliary variables.
+   * Remove bogus parameter specifications."
+  (map-lambda-list #'map-lambda-list-identity lambda-list recursivep))
+
 ;;; common.lisp ends here
