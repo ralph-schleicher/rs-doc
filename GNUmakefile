@@ -34,7 +34,7 @@
 ## Code:
 
 PACKAGE := rs-doc
-VERSION := $(shell grep -h '^[ 	]*:version[ 	]' rs-doc.asd | sed -e 's/[^"]*"//' -e 's/".*//')
+VERSION := $(shell cat VERSION)
 TARNAME := $(PACKAGE)-$(VERSION)
 
 .PHONY: all

@@ -33,13 +33,13 @@
 
 ;;; Code:
 
-(in-package :common-lisp-user)
+(in-package :asdf-user)
 
-(asdf:defsystem :rs-doc
+(defsystem "rs-doc"
   :description "Yet another documentation generator."
   :author "Ralph Schleicher <rs@ralph-schleicher.de>"
   :license "Modified BSD License"
-  :version "1.2"
+  :version (:read-file-line "VERSION")
   :depends-on (:asdf
 	       :uiop
 	       :alexandria
