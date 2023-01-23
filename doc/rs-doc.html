@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
  <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta charset="utf-8"/>
   <title>RS-DOC</title>
   <style type="text/css">
    *{margin:0;border:0;padding:0}
@@ -23,6 +22,7 @@
    span.method-specializers{color:#616161}
    span.method-specializer{color:#212121;white-space:nowrap}
    span.method-qualifier{color:#212121;white-space:nowrap}
+   span.error{color:#f57c00}
    div.contents{padding:1em}
    div.contents-listing{padding:1em}
    div.contents-listing ul{list-style-type:none}
@@ -109,7 +109,7 @@
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">gather-doc</span></a></td>
-	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
 	<td class="category"><span class="category">Function</span></td>
        </tr>
       </tbody>
@@ -125,6 +125,12 @@ Keyword argument SYMBOLS is a list of symbols to be documented.
 Keyword argument INCLUDE is a list of additionals symbols to be
  documented.
 Keyword argument EXCLUDE is a list of symbols not to be documented.
+Keyword argument UNDOCUMENTED determines whether or not to document
+ undocumented symbols.  A value of nil means to exclude undocumented
+ symbols.  Any other value means to include undocumented symbols.  If
+ the value is a string, it will be used as the documentation string.
+ Otherwise, use the string ‘Not documented.’.  Default is to exclude
+ undocumented symbols.
 Keyword argument GENERIC-FUNCTIONS determines whether or not to
  document generic functions.  A value of t means to include all
  generic functions, nil means to exclude all generic functions, a
@@ -177,7 +183,7 @@ This may save some processing time.</pre>
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">generate-doc</span></a></td>
-	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">arguments</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="variable">data</span> (<span class="variable">output</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">output-format</span>&nbsp;<span class="init-form">:text</span>))</span></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">arguments</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="variable">data</span> (<span class="variable">output</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">output-format</span>&nbsp;<span class="init-form">:text</span>))</span></td>
 	<td class="category"><span class="category">Function</span></td>
        </tr>
       </tbody>
@@ -197,7 +203,7 @@ Keyword argument DATA is a documentation data structure as returned
 Keyword argument OUTPUT is the output destination.  Value is either
  an output stream, a pathname, or a string.  A value of t is equal
  to ‘*standard-output*’ and nil means to return a new string.
- Default  is t.
+ Default is t.
 Keyword argument OUTPUT-FORMAT is the output file format.  Value is
  either :text or :html.  Default is to generate plain text.</pre>
     </div>
@@ -356,19 +362,21 @@ TMPL_LOOP DICTIONARY
      TMPL_LOOP LAMBDA-LIST
           The symbol's lambda list.
 
-          TMPL_VAR LAMBDA-LIST-KEYWORD
+          TMPL_VAR KEYWORD
                True if the element is a lambda list keyword.  Value
                is the lambda list keyword, e.g. ‘&amp;key’.  Otherwise,
                the element is a parameter specifier.
 
-          TMPL_VAR KEYWORD
-               The explicit keyword name for a keyword parameter.
-
           TMPL_VAR VARIABLE
-               The variable name.
+               True if the element is a parameter specifier.  Value
+               is the variable name.  If the element is a keyword
+               parameter, this is the keyword name and not the
+               variable name.
 
           TMPL_VAR INIT-FORM
                The initialization form of a parameter specifier.
+               Can only be true if the element is an optional or
+               keyword parameter.
 
           TMPL_VAR METHOD-SPECIALIZER
                True if the element is a method specializer.  Value
@@ -382,6 +390,12 @@ TMPL_LOOP DICTIONARY
 
           TMPL_VAR EQL-SPECIALIZER-OBJECT
                The ‘eql’ specializer object, e.g. ‘0’.
+
+          TMPL_IF IS-LAMBDA-LIST
+               True if the element is an inner lambda list.
+
+          TMPL_LOOP LAMBDA-LIST
+               The inner lambda list.
 
           TMPL_VAR SEPARATOR
                True if this is not the first element.  Value is a
