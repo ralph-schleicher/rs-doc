@@ -48,6 +48,7 @@
 		#:function-information)
   (:export #:gather-doc
 	   #:generate-doc
+	   #:*lambda-list-init-form*
 	   #:*text-width*
 	   #:*text-wrap*
 	   #:*text-indent*
