@@ -86,11 +86,15 @@ rs-doc.css: rs-doc.css.in
 clean:
 	rm -f rs-doc.html.in rs-doc.css.min rs-doc.css temp.css
 
+.PHONY: check
+check: all
+	quicklisp-check-build -sbcl -ccl $(PACKAGE)
+
+### Maintenance
+
 .PHONY: doc
 doc:
 	sbcl --non-interactive --load generate-doc.lisp
-
-### Maintenance
 
 .PHONY: tag
 tag: all
@@ -106,6 +110,6 @@ tag: all
 
 .PHONY: sync
 sync: all
-	~/src/github/github.sh rs-doc
+	~/src/github/github.sh $(PACKAGE)
 
 ## GNUmakefile ends here
