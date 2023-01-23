@@ -204,7 +204,7 @@ the package prefix."
 		       (find-package :keyword))))
     (prin1-to-string symbol)))
 
-(defvar *lambda-list-init-form* nil
+(defvar *lambda-list-init-form* t
   "Whether or not to include the initialization form
 for optional and keyword parameters.")
 
