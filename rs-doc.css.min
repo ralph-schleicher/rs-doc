@@ -16,6 +16,7 @@ span.init-form{white-space:nowrap}
 span.method-specializers{color:#616161}
 span.method-specializer{color:#212121;white-space:nowrap}
 span.method-qualifier{color:#212121;white-space:nowrap}
+span.error{color:#f57c00}
 div.contents{padding:1em}
 div.contents-listing{padding:1em}
 div.contents-listing ul{list-style-type:none}
