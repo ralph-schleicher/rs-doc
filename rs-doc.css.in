@@ -4,6 +4,7 @@
 @foreground: #212121; /* grey 900 */
 @lambda-list: #616161; /* grey 700 */
 @lambda-list-keyword: #388E3C; /* green 700 */
+@error: #f57c00; /* orange 700 */
 
 * {
   margin: 0px;
@@ -92,6 +93,10 @@ span.method-specializer {
 span.method-qualifier {
   color: @foreground;
   white-space: nowrap;
+}
+
+span.error {
+  color: @error;
 }
 
 /*
