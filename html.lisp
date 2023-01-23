@@ -110,19 +110,21 @@ TMPL_LOOP DICTIONARY
      TMPL_LOOP LAMBDA-LIST
           The symbol's lambda list.
 
-          TMPL_VAR LAMBDA-LIST-KEYWORD
+          TMPL_VAR KEYWORD
                True if the element is a lambda list keyword.  Value
                is the lambda list keyword, e.g. ‘&key’.  Otherwise,
                the element is a parameter specifier.
 
-          TMPL_VAR KEYWORD
-               The explicit keyword name for a keyword parameter.
-
           TMPL_VAR VARIABLE
-               The variable name.
+               True if the element is a parameter specifier.  Value
+               is the variable name.  If the element is a keyword
+               parameter, this is the keyword name and not the
+               variable name.
 
           TMPL_VAR INIT-FORM
                The initialization form of a parameter specifier.
+               Can only be true if the element is an optional or
+               keyword parameter.
 
           TMPL_VAR METHOD-SPECIALIZER
                True if the element is a method specializer.  Value
@@ -136,6 +138,12 @@ TMPL_LOOP DICTIONARY
 
           TMPL_VAR EQL-SPECIALIZER-OBJECT
                The ‘eql’ specializer object, e.g. ‘0’.
+
+          TMPL_IF IS-LAMBDA-LIST
+               True if the element is an inner lambda list.
+
+          TMPL_LOOP LAMBDA-LIST
+               The inner lambda list.
 
           TMPL_VAR SEPARATOR
                True if this is not the first element.  Value is a
@@ -209,21 +217,30 @@ of the generated HTML page.")
 (defparameter *space* " "
   "Non-null separator.")
 
-(defun html-lambda-list (lambda-list &optional separator)
-  (mapcar (lambda (object)
-	    (prog1
-		(cond ((member object lambda-list-keywords)
-		       (list :lambda-list-keyword (esc object)
-			     :separator separator))
-		      ((atom object)
-		       (list :variable (esc (%symbol-name object t))
-			     :separator separator))
-		      (t
-		       (list :variable (esc (%symbol-name (first object) t))
-			     :init-form (esc (second object))
-			     :separator separator)))
-	      (setf separator *space*)))
-	  lambda-list))
+(defun html-lambda-list-element (object category separatorp)
+  (let ((separator (and separatorp *space*)))
+    (if (consp object)
+	(ecase category
+	  (:lambda-list
+	   (list :is-lambda-list t
+		 :lambda-list object
+		 :separator separator))
+	  ((:optional-parameter
+	    :keyword-parameter
+	    :auxiliary-variable)
+	   (list :variable (esc (%symbol-name (first object) t))
+		 :init-form (esc (second object))
+		 :separator separator)))
+      (ecase category
+	(:keyword
+	 (list :keyword (esc object)
+	       :separator separator))
+	(:parameter
+	 (list :variable (esc (%symbol-name object t))
+	       :separator separator))))))
+
+(defun html-lambda-list (lambda-list &optional recursivep separatorp)
+  (map-lambda-list #'html-lambda-list-element lambda-list recursivep separatorp))
 
 (defun html-method-qualifiers (qualifiers &optional separator)
   (mapcar (lambda (qualifier)
@@ -259,7 +276,7 @@ of the generated HTML page.")
 				(list :separator separator)))
 		     (setf separator *space*)))
 		 lambda-list specializers)
-	 (nthcdr (length specializers) (html-lambda-list lambda-list *space*))))
+	 (html-lambda-list (nthcdr (length specializers) lambda-list) nil t)))
 
 (defun html-values ()
   "HTML template values."
@@ -289,7 +306,8 @@ of the generated HTML page.")
 						 (get-doc-item doc :lambda-list)
 						 (get-doc-item doc :method-specializers))
 					      (html-lambda-list
-					       (get-doc-item doc :lambda-list)))))
+					       (get-doc-item doc :lambda-list)
+					       (eq category :macro)))))
 				  ,@(when (eq category :method)
 				      (list :method-qualifiers
 					    (html-method-qualifiers
