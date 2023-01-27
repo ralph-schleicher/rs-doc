@@ -110,16 +110,21 @@ TMPL_LOOP DICTIONARY
      TMPL_LOOP LAMBDA-LIST
           The symbol's lambda list.
 
+          TMPL_IF IS-KEYWORD
+          TMPL_IF IS-PARAMETER
+          TMPL_IF IS-LAMBDA-LIST
+               True if the element is a lambda list keyword, a
+               parameter specification, or an inner lambda list
+               respectively.  These conditionals are mutually
+               exclusive.
+
           TMPL_VAR KEYWORD
-               True if the element is a lambda list keyword.  Value
-               is the lambda list keyword, e.g. ‘&key’.  Otherwise,
-               the element is a parameter specifier.
+               The lambda list keyword, e.g. ‘&key’.
 
           TMPL_VAR VARIABLE
-               True if the element is a parameter specifier.  Value
-               is the variable name.  If the element is a keyword
-               parameter, this is the keyword name and not the
-               variable name.
+               The variable name of a parameter specifier.  If the
+               element is a keyword parameter, this is the keyword
+               name and not the variable name.
 
           TMPL_VAR INIT-FORM
                The initialization form of a parameter specifier.
@@ -130,7 +135,7 @@ TMPL_LOOP DICTIONARY
                True if the element is a method specializer.  Value
                is either a class name, e.g. ‘string’, or a ‘eql’
                specializer, e.g. ‘(eql 0)’.  If the class name of
-               the method specializer is t, the value of the HTML
+               the method specializer is ‘t’, the value of the HTML
                template variable METHOD-SPECIALIZER is false.
 
           TMPL_IF IS-EQL-SPECIALIZER
@@ -138,9 +143,6 @@ TMPL_LOOP DICTIONARY
 
           TMPL_VAR EQL-SPECIALIZER-OBJECT
                The ‘eql’ specializer object, e.g. ‘0’.
-
-          TMPL_IF IS-LAMBDA-LIST
-               True if the element is an inner lambda list.
 
           TMPL_LOOP LAMBDA-LIST
                The inner lambda list.
@@ -160,7 +162,7 @@ TMPL_LOOP DICTIONARY
                single space character.
 
      TMPL_LOOP METHOD-SPECIALIZERS
-          List of method specializers (class name t is not omitted).
+          List of method specializers (class name ‘t’ is not omitted).
 
           TMPL_VAR METHOD-SPECIALIZER
                The method specializer, for exmaple, ‘t’ or ‘(eql 0)’.
@@ -228,15 +230,18 @@ of the generated HTML page.")
 	  ((:optional-parameter
 	    :keyword-parameter
 	    :auxiliary-variable)
-	   (list :variable (esc (%symbol-name (first object) t))
+	   (list :is-parameter t
+		 :variable (esc (%symbol-name (first object) t))
 		 :init-form (esc (second object))
 		 :separator separator)))
       (ecase category
 	(:keyword
-	 (list :keyword (esc object)
+	 (list :is-keyword t
+	       :keyword (esc object)
 	       :separator separator))
 	(:parameter
-	 (list :variable (esc (%symbol-name object t))
+	 (list :is-parameter t
+	       :variable (esc (%symbol-name object t))
 	       :separator separator))))))
 
 (defun html-lambda-list (lambda-list &optional recursivep separatorp)
@@ -269,11 +274,13 @@ of the generated HTML page.")
 		   (prog1
 		       ;; OBJECT is already properly formatted.
 		       (if (atom object)
-			   (list :variable (esc (%symbol-name object t))
+			   (list :is-parameter t
+	       			 :variable (esc (%symbol-name object t))
 				 :separator separator)
-			 (nconc (list :variable (esc (%symbol-name (first object) t)))
-				(html-method-specializer specializer)
-				(list :separator separator)))
+			 `(:is-parameter t
+			   :variable ,(esc (%symbol-name (first object) t))
+			   ,@(html-method-specializer specializer)
+			   :separator ,separator))
 		     (setf separator *space*)))
 		 lambda-list specializers)
 	 (html-lambda-list (nthcdr (length specializers) lambda-list) nil t)))
