@@ -200,21 +200,18 @@ For example, CSS style sheets or image files.
 The ‘generate-doc’ function will copy these files into the directory
 of the generated HTML page.")
 
-(defun dup (object)
+(defun str (object)
   (cond ((symbolp object)
 	 (%symbol-name object))
 	((atom object)
-	 object)
+	 (prin1-to-string object))
+	((and (= (length object) 2) (eq (first object) 'quote))
+	 (concatenate 'string "'" (str (second object))))
 	(t
-	 (mapcar #'dup object))))
-
-(defun str (object)
-  (or (and (stringp object) object)
-      (with-output-to-string (stream)
-	(princ (dup object) stream))))
+	 (princ-to-string (mapcar #'str object)))))
 
 (defun esc (object)
-  (cl-who:escape-string-minimal (str object)))
+  (cl-who:escape-string-minimal (if (stringp object) object (str object))))
 
 (defparameter *space* " "
   "Non-null separator.")
@@ -232,7 +229,7 @@ of the generated HTML page.")
 	    :auxiliary-variable)
 	   (list :is-parameter t
 		 :variable (esc (%symbol-name (first object) t))
-		 :init-form (esc (second object))
+		 :init-form (esc (str (second object)))
 		 :separator separator)))
       (ecase category
 	(:keyword
