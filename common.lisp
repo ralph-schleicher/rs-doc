@@ -291,4 +291,33 @@ Third argument SEPARATORP is true if OBJECT is not the first element."
    * Remove bogus parameter specifications."
   (map-lambda-list #'map-lambda-list-identity lambda-list recursivep))
 
+(defun ensure-string (object &optional readable)
+  "Ensure that OBJECT is a string.
+If OBJECT is already a string, return it unmodified.  Otherwise,
+ return the printed representation of OBJECT as a new string.
+If optional second argument READABLE is true, print OBJECT by
+ calling ‘prin1’.  Otherwise, use ‘princ’."
+  (if (stringp object)
+      object
+    (funcall (if readable
+		 #'prin1-to-string
+	       #'princ-to-string)
+	     object)))
+
+(defun pr1 (object)
+  "Convert all elements of OBJECT into their printed representation."
+  (cond ((symbolp object)
+	 (%symbol-name object))
+	((atom object)
+	 (prin1-to-string object))
+	((not (listp (rest object)))
+	 (cons (pr1 (first object)) (pr1 (rest object))))
+	((and (= (length object) 2) (eq (first object) 'quote))
+	 (concatenate 'string "'" (str (second object))))
+	((mapcar #'pr1 object))))
+
+(defun str (object)
+  "Convert OBJECT into its printed representation."
+  (ensure-string (pr1 object)))
+
 ;;; common.lisp ends here

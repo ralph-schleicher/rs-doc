@@ -75,7 +75,7 @@ Non-null is the number of characters.")
 	    (new-paragraph)
 	    (format t "~V<[~A]~>~%~A~:[~; ~:A~]~%"
 		    *text-width* (category-name category) symbol
-		    (eq (namespace category) :function) (doc-item-lambda-list doc))
+		    (eq (namespace category) :function) (pr1 (doc-item-lambda-list doc)))
 	    (for text = (doc-item-documentation doc))
 	    (if (not indent)
 		(progn

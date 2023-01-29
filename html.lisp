@@ -200,16 +200,6 @@ For example, CSS style sheets or image files.
 The ‘generate-doc’ function will copy these files into the directory
 of the generated HTML page.")
 
-(defun str (object)
-  (cond ((symbolp object)
-	 (%symbol-name object))
-	((atom object)
-	 (prin1-to-string object))
-	((and (= (length object) 2) (eq (first object) 'quote))
-	 (concatenate 'string "'" (str (second object))))
-	(t
-	 (princ-to-string (mapcar #'str object)))))
-
 (defun esc (object)
   (cl-who:escape-string-minimal (if (stringp object) object (str object))))
 
@@ -229,7 +219,7 @@ of the generated HTML page.")
 	    :auxiliary-variable)
 	   (list :is-parameter t
 		 :variable (esc (%symbol-name (first object) t))
-		 :init-form (esc (str (second object)))
+		 :init-form (esc (pr1 (second object)))
 		 :separator separator)))
       (ecase category
 	(:keyword
