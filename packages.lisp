@@ -35,7 +35,8 @@
 
 (in-package :common-lisp-user)
 
-(defpackage :rs-doc
+(defpackage #:de.ralph-schleicher.documentation
+  (:nicknames :rs-doc)
   (:use :common-lisp
 	:iterate)
   (:import-from #:closer-mop
