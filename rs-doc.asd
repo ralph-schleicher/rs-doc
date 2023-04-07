@@ -51,7 +51,7 @@
 	       :cl-who
 	       :uuid)
   :serial t
-  :components ((:file "package")
+  :components ((:file "packages")
 	       (:file "common")
 	       (:file "text")
 	       (:file "html")

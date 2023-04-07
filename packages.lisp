@@ -1,4 +1,4 @@
-;;; package.lisp --- package definition
+;;; packages.lisp --- package definitions
 
 ;; Copyright (C) 2019 Ralph Schleicher
 
@@ -81,4 +81,4 @@ If OBJECT is an atom, return nil.
 Otherwise, return ‘(rest OBJECT)’."
   (if (atom object) nil (rest object)))
 
-;;; package.lisp ends here
+;;; packages.lisp ends here
