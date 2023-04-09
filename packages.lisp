@@ -47,7 +47,8 @@
   (:import-from #:cl-environments
 		#:variable-information
 		#:function-information)
-  (:export #:gather-doc
+  (:export #:get-doc
+	   #:gather-doc
 	   #:generate-doc
 	   #:*lambda-list-init-form*
 	   #:*text-width*
