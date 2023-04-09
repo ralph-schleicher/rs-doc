@@ -165,7 +165,7 @@ TMPL_LOOP DICTIONARY
           List of method specializers (class name ‘t’ is not omitted).
 
           TMPL_VAR METHOD-SPECIALIZER
-               The method specializer, for exmaple, ‘t’ or ‘(eql 0)’.
+               The method specializer, e.g. ‘t’ or ‘(eql 0)’.
 
           TMPL_IF IS-EQL-SPECIALIZER
                True if the method specializer is an ‘eql’ specializer.
