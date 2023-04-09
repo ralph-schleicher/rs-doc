@@ -35,6 +35,23 @@
 
 (in-package :rs-doc)
 
+(defmacro fixme ()
+  `(error "Should not happen."))
+
+(defun first-safe (object)
+  "Return the first element denoted by OBJECT.
+
+If OBJECT is an atom, return OBJECT.
+Otherwise, return ‘(first OBJECT)’."
+  (if (atom object) object (first object)))
+
+(defun rest-safe (object)
+  "Return the remaining elements denoted by OBJECT.
+
+If OBJECT is an atom, return nil.
+Otherwise, return ‘(rest OBJECT)’."
+  (if (atom object) nil (rest object)))
+
 (defvar *title* nil
   "The title (a string).")
 
