@@ -316,7 +316,7 @@ of the generated HTML page.")
     ;; Miscellaneous.
     (let ((system (asdf:find-system :rs-doc)))
       (mapc (lambda (list)
-	      (alexandria:when-let ((value (second list)))
+	      (when-let ((value (second list)))
 		(push (list (first list) (esc value)) values)))
 	    `((:documentation-tool-name ,(asdf:component-name system))
 	      (:documentation-tool-description ,(asdf:system-description system))
@@ -334,20 +334,18 @@ of the generated HTML page.")
      *html-template* (nconc (html-values) *html-values*)
      :stream *standard-output*))
   ;; Copy resources to the output directory.
-  (alexandria:when-let
-      ((resources *html-resources*)
-       (output (ignore-errors
-		(pathname *standard-output*))))
+  (when-let ((resources *html-resources*)
+	     (output (ignore-errors
+		      (pathname *standard-output*))))
     (dolist (resource resources)
-      (alexandria:when-let*
-	  ((from (truename resource))
-	   (to (make-pathname
-		:host (pathname-host output)
-		:device (pathname-device output)
-		:directory (pathname-directory output)
-		:name (pathname-name from)
-		:type (pathname-type from)))
-	   (distinct (not (equal from (probe-file to)))))
+      (when-let* ((from (truename resource))
+		  (to (make-pathname
+		       :host (pathname-host output)
+		       :device (pathname-device output)
+		       :directory (pathname-directory output)
+		       :name (pathname-name from)
+		       :type (pathname-type from)))
+		  (distinct (not (equal from (probe-file to)))))
 	(uiop:copy-file from to)))))
 
 ;;; html.lisp ends here

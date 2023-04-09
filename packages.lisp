@@ -39,6 +39,9 @@
   (:nicknames :rs-doc)
   (:use :common-lisp
 	:iterate)
+  (:import-from #:alexandria
+		#:when-let
+		#:when-let*)
   (:import-from #:closer-mop
 		#:generic-function-methods
 		#:method-lambda-list

@@ -120,11 +120,11 @@
 (defun get-doc (symbol)
   "Return all documentation items for SYMBOL as a list."
   (nconc
-   (alexandria:when-let ((category (%typep symbol)))
+   (when-let ((category (%typep symbol)))
      (list (make-doc category symbol (documentation symbol 'type))))
-   (alexandria:when-let ((category (%variablep symbol)))
+   (when-let ((category (%variablep symbol)))
      (list (make-doc category symbol (documentation symbol 'variable))))
-   (alexandria:when-let ((category (%functionp symbol)))
+   (when-let ((category (%functionp symbol)))
      (cons (make-doc category symbol (documentation symbol 'function)
 		     :lambda-list (%function-lambda-list
 				   #+sbcl
