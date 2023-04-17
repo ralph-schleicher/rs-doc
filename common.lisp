@@ -195,11 +195,28 @@ where NAMESPACE is a keyword and NAME is a string.")
   "Namespace for creating a named UUID.")
 
 (defun make-id (name)
-  "Create a named UUID for string NAME.
-Value is a string."
-  (nstring-downcase
-   (with-output-to-string (stream)
-     (print-object (uuid:make-v5-uuid *id-namespace* name) stream))))
+  "Create an identifier for string NAME.
+If special variable ‘*id-namespace*’ is an ‘uuid:uuid’ object, create
+a named UUID.  If ‘*id-namespace*’ is an integer, create an identifier
+with ‘*id-namespace*’ base 32 digits starting with a letter."
+  (etypecase *id-namespace*
+    (uuid:uuid
+     (nstring-downcase
+      (with-output-to-string (stream)
+        (print-object (uuid:make-v5-uuid *id-namespace* name) stream))))
+    ((integer 4 16)
+     (let* ((seq (rs-basen:basen-encode
+                  nil (ironclad:digest-sequence :ripemd-160
+                       (babel:string-to-octets
+                        name :encoding :utf-8 :use-bom nil :errorp t))
+                  :alphabet rs-basen:human-base32-alphabet))
+            (start (position-if #'alpha-char-p seq)))
+       (let* ((len *id-namespace*)
+              (limit (- (length seq) len)))
+         (when (or (null start) (> start limit))
+           (error "Probability ~R to one against and falling."
+                  (floor (/ (expt 6/32 limit)))))
+         (subseq seq start (+ start len)))))))
 
 (defun make-keyword (&rest strings)
   "Concatenate one or more string designators
