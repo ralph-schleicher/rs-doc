@@ -41,22 +41,22 @@
   :license "Modified BSD License"
   :version (:read-file-line "VERSION")
   :depends-on (:asdf
-	       :uiop
-	       :alexandria
-	       :iterate
-	       :closer-mop
-	       :cl-environments
-	       :trivial-arguments
-	       :html-template
-	       :cl-who
-	       :ironclad
-	       :rs-basen
-	       :uuid)
+               :uiop
+               :alexandria
+               :iterate
+               :closer-mop
+               :cl-environments
+               :trivial-arguments
+               :html-template
+               :cl-who
+               :ironclad
+               :rs-basen
+               :uuid)
   :serial t
   :components ((:file "packages")
-	       (:file "common")
-	       (:file "text")
-	       (:file "html")
-	       (:file "main")))
+               (:file "common")
+               (:file "text")
+               (:file "html")
+               (:file "main")))
 
 ;;; rs-doc.asd ends here

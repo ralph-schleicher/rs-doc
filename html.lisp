@@ -36,8 +36,8 @@
 (in-package :rs-doc)
 
 (defparameter *html-template* (merge-pathnames
-			       #P"rs-doc.html.in"
-			       (asdf:system-source-directory :rs-doc))
+                               #P"rs-doc.html.in"
+                               (asdf:system-source-directory :rs-doc))
   "The HTML template file.
 
 The template file is coded up by the user.  The ‘generate-doc’
@@ -209,68 +209,68 @@ of the generated HTML page.")
 (defun html-lambda-list-element (object category separatorp)
   (let ((separator (and separatorp *space*)))
     (if (consp object)
-	(ecase category
-	  (:lambda-list
-	   (list :is-lambda-list t
-		 :lambda-list object
-		 :separator separator))
-	  ((:optional-parameter
-	    :keyword-parameter
-	    :auxiliary-variable)
-	   (list :is-parameter t
-		 :variable (esc (%symbol-name (first object) t))
-		 :init-form (esc (pr1 (second object)))
-		 :separator separator)))
+        (ecase category
+          (:lambda-list
+           (list :is-lambda-list t
+                 :lambda-list object
+                 :separator separator))
+          ((:optional-parameter
+            :keyword-parameter
+            :auxiliary-variable)
+           (list :is-parameter t
+                 :variable (esc (%symbol-name (first object) t))
+                 :init-form (esc (pr1 (second object)))
+                 :separator separator)))
       (ecase category
-	(:keyword
-	 (list :is-keyword t
-	       :keyword (esc object)
-	       :separator separator))
-	(:parameter
-	 (list :is-parameter t
-	       :variable (esc (%symbol-name object t))
-	       :separator separator))))))
+        (:keyword
+         (list :is-keyword t
+               :keyword (esc object)
+               :separator separator))
+        (:parameter
+         (list :is-parameter t
+               :variable (esc (%symbol-name object t))
+               :separator separator))))))
 
 (defun html-lambda-list (lambda-list &optional recursivep separatorp)
   (map-lambda-list #'html-lambda-list-element lambda-list recursivep separatorp))
 
 (defun html-method-qualifiers (qualifiers &optional separator)
   (mapcar (lambda (qualifier)
-	    (prog1
-		(list :method-qualifier (esc qualifier)
-		      :separator separator)
-	      (setf separator *space*)))
-	  qualifiers))
+            (prog1
+                (list :method-qualifier (esc qualifier)
+                      :separator separator)
+              (setf separator *space*)))
+          qualifiers))
 
 (defun html-method-specializer (specializer)
   (nconc (list :method-specializer (esc specializer))
-	 (and (consp specializer) (eq (first specializer) 'eql)
-	      (list :is-eql-specializer t
-		    :eql-specializer-object (esc (second specializer))))))
+         (and (consp specializer) (eq (first specializer) 'eql)
+              (list :is-eql-specializer t
+                    :eql-specializer-object (esc (second specializer))))))
 
 (defun html-method-specializers (specializers &optional separator)
   (mapcar (lambda (specializer)
-	    (prog1
-		(nconc (html-method-specializer specializer)
-		       (list :separator separator))
-	      (setf separator *space*)))
-	  specializers))
+            (prog1
+                (nconc (html-method-specializer specializer)
+                       (list :separator separator))
+              (setf separator *space*)))
+          specializers))
 
 (defun html-method-lambda-list (lambda-list specializers &optional separator)
   (nconc (mapcar (lambda (object specializer)
-		   (prog1
-		       ;; OBJECT is already properly formatted.
-		       (if (atom object)
-			   (list :is-parameter t
-	       			 :variable (esc (%symbol-name object t))
-				 :separator separator)
-			 `(:is-parameter t
-			   :variable ,(esc (%symbol-name (first object) t))
-			   ,@(html-method-specializer specializer)
-			   :separator ,separator))
-		     (setf separator *space*)))
-		 lambda-list specializers)
-	 (html-lambda-list (nthcdr (length specializers) lambda-list) nil t)))
+                   (prog1
+                       ;; OBJECT is already properly formatted.
+                       (if (atom object)
+                           (list :is-parameter t
+                                        :variable (esc (%symbol-name object t))
+                                 :separator separator)
+                         `(:is-parameter t
+                           :variable ,(esc (%symbol-name (first object) t))
+                           ,@(html-method-specializer specializer)
+                           :separator ,separator))
+                     (setf separator *space*)))
+                 lambda-list specializers)
+         (html-lambda-list (nthcdr (length specializers) lambda-list) nil t)))
 
 (defun html-values ()
   "HTML template values."
@@ -282,70 +282,70 @@ of the generated HTML page.")
     (when *prologue*
       (push (list :prologue (esc *prologue*)) values))
     (let ((items (iter (for doc :in *dictionary*)
-		       (for namespace = (get-doc-item doc :namespace))
-		       (for category = (get-doc-item doc :category))
-		       (for package = (get-doc-item doc :package))
-		       (for symbol = (get-doc-item doc :symbol))
-		       (collect `(:id ,(get-doc-item doc :id)
-				  :namespace ,(esc (namespace-name namespace))
-				  ,(make-keyword "IN-" namespace "-NAMESPACE") t
-				  :category ,(esc (category-name category))
-				  ,(make-keyword "IS-" category) t
-				  :package ,(and package (esc (package-name package)))
-				  :symbol ,(esc symbol)
-				  ,@(when (eq namespace :function)
-				      (list :lambda-list
-					    (if (eq category :method)
-						(html-method-lambda-list
-						 (get-doc-item doc :lambda-list)
-						 (get-doc-item doc :method-specializers))
-					      (html-lambda-list
-					       (get-doc-item doc :lambda-list)
-					       (eq category :macro)))))
-				  ,@(when (eq category :method)
-				      (list :method-qualifiers
-					    (html-method-qualifiers
-					     (get-doc-item doc :method-qualifiers))
-					    :method-specializers
-					    (html-method-specializers
-					     (get-doc-item doc :method-specializers))))
-				  :documentation ,(esc (get-doc-item doc :documentation)))))))
+                       (for namespace = (get-doc-item doc :namespace))
+                       (for category = (get-doc-item doc :category))
+                       (for package = (get-doc-item doc :package))
+                       (for symbol = (get-doc-item doc :symbol))
+                       (collect `(:id ,(get-doc-item doc :id)
+                                  :namespace ,(esc (namespace-name namespace))
+                                  ,(make-keyword "IN-" namespace "-NAMESPACE") t
+                                  :category ,(esc (category-name category))
+                                  ,(make-keyword "IS-" category) t
+                                  :package ,(and package (esc (package-name package)))
+                                  :symbol ,(esc symbol)
+                                  ,@(when (eq namespace :function)
+                                      (list :lambda-list
+                                            (if (eq category :method)
+                                                (html-method-lambda-list
+                                                 (get-doc-item doc :lambda-list)
+                                                 (get-doc-item doc :method-specializers))
+                                              (html-lambda-list
+                                               (get-doc-item doc :lambda-list)
+                                               (eq category :macro)))))
+                                  ,@(when (eq category :method)
+                                      (list :method-qualifiers
+                                            (html-method-qualifiers
+                                             (get-doc-item doc :method-qualifiers))
+                                            :method-specializers
+                                            (html-method-specializers
+                                             (get-doc-item doc :method-specializers))))
+                                  :documentation ,(esc (get-doc-item doc :documentation)))))))
       (push (list :dictionary items) values))
     (when *epilogue*
       (push (list :epilogue (esc *epilogue*)) values))
     ;; Miscellaneous.
     (let ((system (asdf:find-system :rs-doc)))
       (mapc (lambda (list)
-	      (when-let ((value (second list)))
-		(push (list (first list) (esc value)) values)))
-	    `((:documentation-tool-name ,(asdf:component-name system))
-	      (:documentation-tool-description ,(asdf:system-description system))
-	      (:documentation-tool-author ,(asdf:system-author system))
-	      (:documentation-tool-license ,(asdf:system-license system))
-	      (:documentation-tool-version ,(asdf:component-version system)))))
+              (when-let ((value (second list)))
+                (push (list (first list) (esc value)) values)))
+            `((:documentation-tool-name ,(asdf:component-name system))
+              (:documentation-tool-description ,(asdf:system-description system))
+              (:documentation-tool-author ,(asdf:system-author system))
+              (:documentation-tool-license ,(asdf:system-license system))
+              (:documentation-tool-version ,(asdf:component-version system)))))
     ;; Make VALUES a property list.
     (reduce #'nconc (nreverse values))))
 
 (defun html-doc ()
   "Generate HTML."
   (let ((html-template:*string-modifier* #'identity)
-	(html-template:*ignore-empty-lines* t))
+        (html-template:*ignore-empty-lines* t))
     (html-template:fill-and-print-template
      *html-template* (nconc (html-values) *html-values*)
      :stream *standard-output*))
   ;; Copy resources to the output directory.
   (when-let ((resources *html-resources*)
-	     (output (ignore-errors
-		      (pathname *standard-output*))))
+             (output (ignore-errors
+                      (pathname *standard-output*))))
     (dolist (resource resources)
       (when-let* ((from (truename resource))
-		  (to (make-pathname
-		       :host (pathname-host output)
-		       :device (pathname-device output)
-		       :directory (pathname-directory output)
-		       :name (pathname-name from)
-		       :type (pathname-type from)))
-		  (distinct (not (equal from (probe-file to)))))
-	(uiop:copy-file from to)))))
+                  (to (make-pathname
+                       :host (pathname-host output)
+                       :device (pathname-device output)
+                       :directory (pathname-directory output)
+                       :name (pathname-name from)
+                       :type (pathname-type from)))
+                  (distinct (not (equal from (probe-file to)))))
+        (uiop:copy-file from to)))))
 
 ;;; html.lisp ends here

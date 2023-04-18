@@ -130,10 +130,10 @@ where NAMESPACE is a keyword and NAME is a string.")
 (defun make-doc-item (&key namespace category package symbol documentation)
   "Create a new documentation item."
   (list :namespace namespace
-	:category category
-	:package package
-	:symbol symbol
-	:documentation documentation))
+        :category category
+        :package package
+        :symbol symbol
+        :documentation documentation))
 
 (defun get-doc-item (doc key)
   "Return the property value of KEY."
@@ -154,7 +154,7 @@ where NAMESPACE is a keyword and NAME is a string.")
 (defun set-doc-items (doc &rest properties)
   "Set PROPERTIES (a plist) and return DOC."
   (iter (for (key value) :on properties :by #'cddr)
-	(set-doc-item doc key value))
+        (set-doc-item doc key value))
   doc)
 
 (defun doc-item-category (doc)
@@ -173,21 +173,21 @@ where NAMESPACE is a keyword and NAME is a string.")
   "Return the signature of a documentation item.  Value is a string."
   (with-output-to-string (stream)
     (let ((category (getf doc :category))
-	  (package (getf doc :package))
-	  (symbol (getf doc :symbol)))
+          (package (getf doc :package))
+          (symbol (getf doc :symbol)))
       (write-string (string category) stream)
       (write-char #\: stream)
       (write-string (or (ignore-errors (package-name package)) "") stream)
       (write-char #\: stream)
       (write-string (symbol-name symbol) stream)
       (when (eq category :method)
-	(let ((*package* (find-package :common-lisp))
-	      (*print-case* :upcase))
-	  (iter (for qualifier :in (getf doc :method-qualifiers))
-		(write-char #\Space stream)
-		(prin1 qualifier stream))
-	  (write-char #\Space stream)
-	  (prin1 (getf doc :method-specializers) stream))))))
+        (let ((*package* (find-package :common-lisp))
+              (*print-case* :upcase))
+          (iter (for qualifier :in (getf doc :method-qualifiers))
+                (write-char #\Space stream)
+                (prin1 qualifier stream))
+          (write-char #\Space stream)
+          (prin1 (getf doc :method-specializers) stream))))))
 
 ;;;; Miscellaneous definitions.
 
@@ -227,7 +227,7 @@ digits starting with a letter."
   "Concatenate one or more string designators
 and return a keyword with this name."
   (intern (apply #'concatenate 'string (mapcar #'string strings))
-	  (find-package :keyword)))
+          (find-package :keyword)))
 
 (defparameter *use-list* (list (find-package :common-lisp))
   "List of accessible packages.")
@@ -238,9 +238,9 @@ The package prefix is omitted if the symbol's package is a member
 of optional argument USE-LIST.  If USE-LIST is true, always omit
 the package prefix."
   (let ((*package* (or (if (atom use-list)
-			   (symbol-package symbol)
-			 (first (member (symbol-package symbol) use-list :test #'eq)))
-		       (find-package :keyword))))
+                           (symbol-package symbol)
+                         (first (member (symbol-package symbol) use-list :test #'eq)))
+                       (find-package :keyword))))
     (prin1-to-string symbol)))
 
 (defvar *lambda-list-init-form* t
@@ -273,51 +273,51 @@ Second argument CATEGORY is a keyword identifying the type of OBJECT.
  ‘:keyword-parameter’, ‘:auxiliary-variable’, or ‘:lambda-list’.
 Third argument SEPARATORP is true if OBJECT is not the first element."
   (iter (with lambda-list-keyword)
-	(for object :in lambda-list)
-	(if (listp object)
-	    (cond ((null lambda-list-keyword)
-		   ;; A required parameter.
-		   (if recursivep
-		       ;; An inner lambda list.
-		       (collect (funcall function (map-lambda-list function object recursivep)
-					 :lambda-list separatorp))
-		     ;; A specialized parameter.
-		     (collect (funcall function object :specialized-parameter separatorp))))
-		  ((member lambda-list-keyword '(&optional &key &aux))
-		   ;; For optional and keyword parameters, reduce
-		   ;; ‘(VAR [INIT-FORM [SUPPLIEDP]])’ to VAR.
-		   (let ((variable (first object))
-			 (init-form (second object)))
-		     ;; For keyword parameters, further reduce
-		     ;; ‘(KEYWORD-NAME VAR)’ to KEYWORD-NAME.
-		     (when (consp variable)
-		       (setf variable (first variable)))
-		     ;; An optional or keyword parameter.
-		     (collect (if (and *lambda-list-init-form* init-form)
-				  (funcall function (list variable init-form)
-					   (ecase lambda-list-keyword
-					     (&optional
-					      :optional-parameter)
-					     (&key
-					      :keyword-parameter)
-					     (&aux
-					      :auxiliary-variable)) separatorp)
-				(funcall function variable :parameter separatorp)))))
-		  ((error 'program-error)))
-	  (cond ((eq object '&aux)
-		 (finish))
-		((member object lambda-list-keywords :test #'eq)
-		 ;; A lambda list keyword.
-		 (setf lambda-list-keyword object)
-		 (collect (funcall function object :keyword separatorp)))
-		((symbolp object)
-		 ;; A parameter.
-		 (collect (funcall function object :parameter separatorp))
-		 (when (eq lambda-list-keyword '&whole)
-		   ;; The next parameter is a required parameter.
-		   (setf lambda-list-keyword nil)))
-		((error 'program-error))))
-	(setf separatorp t)))
+        (for object :in lambda-list)
+        (if (listp object)
+            (cond ((null lambda-list-keyword)
+                   ;; A required parameter.
+                   (if recursivep
+                       ;; An inner lambda list.
+                       (collect (funcall function (map-lambda-list function object recursivep)
+                                         :lambda-list separatorp))
+                     ;; A specialized parameter.
+                     (collect (funcall function object :specialized-parameter separatorp))))
+                  ((member lambda-list-keyword '(&optional &key &aux))
+                   ;; For optional and keyword parameters, reduce
+                   ;; ‘(VAR [INIT-FORM [SUPPLIEDP]])’ to VAR.
+                   (let ((variable (first object))
+                         (init-form (second object)))
+                     ;; For keyword parameters, further reduce
+                     ;; ‘(KEYWORD-NAME VAR)’ to KEYWORD-NAME.
+                     (when (consp variable)
+                       (setf variable (first variable)))
+                     ;; An optional or keyword parameter.
+                     (collect (if (and *lambda-list-init-form* init-form)
+                                  (funcall function (list variable init-form)
+                                           (ecase lambda-list-keyword
+                                             (&optional
+                                              :optional-parameter)
+                                             (&key
+                                              :keyword-parameter)
+                                             (&aux
+                                              :auxiliary-variable)) separatorp)
+                                (funcall function variable :parameter separatorp)))))
+                  ((error 'program-error)))
+          (cond ((eq object '&aux)
+                 (finish))
+                ((member object lambda-list-keywords :test #'eq)
+                 ;; A lambda list keyword.
+                 (setf lambda-list-keyword object)
+                 (collect (funcall function object :keyword separatorp)))
+                ((symbolp object)
+                 ;; A parameter.
+                 (collect (funcall function object :parameter separatorp))
+                 (when (eq lambda-list-keyword '&whole)
+                   ;; The next parameter is a required parameter.
+                   (setf lambda-list-keyword nil)))
+                ((error 'program-error))))
+        (setf separatorp t)))
 
 (defun map-lambda-list-identity (object &rest rest)
   "Identity call-back function for ‘map-lambda-list’."
@@ -339,21 +339,21 @@ If optional second argument READABLE is true, print OBJECT by
   (if (stringp object)
       object
     (funcall (if readable
-		 #'prin1-to-string
-	       #'princ-to-string)
-	     object)))
+                 #'prin1-to-string
+               #'princ-to-string)
+             object)))
 
 (defun pr1 (object)
   "Convert all elements of OBJECT into their printed representation."
   (cond ((symbolp object)
-	 (%symbol-name object))
-	((atom object)
-	 (prin1-to-string object))
-	((not (listp (rest object)))
-	 (cons (pr1 (first object)) (pr1 (rest object))))
-	((and (= (length object) 2) (eq (first object) 'quote))
-	 (concatenate 'string "'" (str (second object))))
-	((mapcar #'pr1 object))))
+         (%symbol-name object))
+        ((atom object)
+         (prin1-to-string object))
+        ((not (listp (rest object)))
+         (cons (pr1 (first object)) (pr1 (rest object))))
+        ((and (= (length object) 2) (eq (first object) 'quote))
+         (concatenate 'string "'" (str (second object))))
+        ((mapcar #'pr1 object))))
 
 (defun str (object)
   "Convert OBJECT into its printed representation."

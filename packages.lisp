@@ -38,33 +38,33 @@
 (defpackage #:de.ralph-schleicher.documentation
   (:nicknames :rs-doc)
   (:use :common-lisp
-	:iterate)
+        :iterate)
   (:import-from #:alexandria
-		#:when-let
-		#:when-let*)
+                #:when-let
+                #:when-let*)
   (:import-from #:closer-mop
-		#:generic-function-methods
-		#:method-lambda-list
-		#:method-specializers
-		#:method-qualifiers)
+                #:generic-function-methods
+                #:method-lambda-list
+                #:method-specializers
+                #:method-qualifiers)
   (:import-from #:cl-environments
-		#:variable-information
-		#:function-information)
+                #:variable-information
+                #:function-information)
   (:export #:get-doc
-	   #:gather-doc
-	   #:generate-doc
-	   #:*lambda-list-init-form*
-	   #:*text-width*
-	   #:*text-wrap*
-	   #:*text-indent*
-	   #:*html-template*
-	   #:*html-values*
-	   #:*html-resources*
-	   ;; Export these symbols so that the user can write its own
-	   ;; predicate function for sorting documentation items.
-	   #:doc-item-category
-	   #:doc-item-symbol
-	   #:compare-doc-item)
+           #:gather-doc
+           #:generate-doc
+           #:*lambda-list-init-form*
+           #:*text-width*
+           #:*text-wrap*
+           #:*text-indent*
+           #:*html-template*
+           #:*html-values*
+           #:*html-resources*
+           ;; Export these symbols so that the user can write its own
+           ;; predicate function for sorting documentation items.
+           #:doc-item-category
+           #:doc-item-symbol
+           #:compare-doc-item)
   (:documentation "Yet another documentation generator."))
 
 ;;; packages.lisp ends here
