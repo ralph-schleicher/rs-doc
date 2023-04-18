@@ -197,12 +197,14 @@ where NAMESPACE is a keyword and NAME is a string.")
 (defun make-id (name)
   "Create an identifier for string NAME.
 If special variable ‘*id-namespace*’ is an ‘uuid:uuid’ object, create
-a named UUID.  If ‘*id-namespace*’ is an integer, create an identifier
-with ‘*id-namespace*’ base 32 digits starting with a letter."
+a named UUID with a leading underscore character.  If ‘*id-namespace*’
+is an integer, create an identifier with ‘*id-namespace*’ base 32
+digits starting with a letter."
   (etypecase *id-namespace*
     (uuid:uuid
      (nstring-downcase
       (with-output-to-string (stream)
+        (write-char #\_ stream)
         (print-object (uuid:make-v5-uuid *id-namespace* name) stream))))
     ((integer 4 16)
      ;; A 160 bit hash value creates a sequence of 32 base 32 digits.

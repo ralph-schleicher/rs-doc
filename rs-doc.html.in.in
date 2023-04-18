@@ -31,7 +31,7 @@
     <ul>
      <!-- TMPL_LOOP DICTIONARY -->
      <li>
-      <a href="#_<!-- TMPL_VAR ID -->">
+      <a href="#<!-- TMPL_VAR ID -->">
        <span class="category"><!-- TMPL_VAR CATEGORY --></span>
        <span class="symbol"><!-- TMPL_VAR SYMBOL --></span>
        <!-- TMPL_IF METHOD-SPECIALIZERS -->
@@ -48,7 +48,7 @@
   <!-- TMPL_IF DICTIONARY -->
   <div class="dictionary">
    <!-- TMPL_LOOP DICTIONARY -->
-   <div class="definition" id="_<!-- TMPL_VAR ID -->">
+   <div class="definition" id="<!-- TMPL_VAR ID -->">
     <div class="signature">
      <table class="signature">
       <colgroup>
