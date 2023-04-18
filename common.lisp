@@ -205,6 +205,7 @@ with ‘*id-namespace*’ base 32 digits starting with a letter."
       (with-output-to-string (stream)
         (print-object (uuid:make-v5-uuid *id-namespace* name) stream))))
     ((integer 4 16)
+     ;; A 160 bit hash value creates a sequence of 32 base 32 digits.
      (let* ((seq (rs-basen:basen-encode
                   nil (ironclad:digest-sequence :ripemd-160
                        (babel:string-to-octets
@@ -215,8 +216,10 @@ with ‘*id-namespace*’ base 32 digits starting with a letter."
               (limit (- (length seq) len)))
          (when (or (null start) (> start limit))
            (error "Probability ~R to one against and falling."
-                  (floor (/ (expt 6/32 limit)))))
-         (subseq seq start (+ start len)))))))
+                  (ceiling (/ (expt 6/32 limit)))))
+         (subseq seq start (+ start len)))))
+    (function
+     (funcall *id-namespace* name))))
 
 (defun make-keyword (&rest strings)
   "Concatenate one or more string designators
