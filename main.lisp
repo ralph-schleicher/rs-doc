@@ -259,6 +259,7 @@ Examples:
 		     (generic-functions t) (methods t)
 		     sort-predicate
 		     title subtitle prologue epilogue
+		     (identifier-namespace 8)
 		     (print-case :downcase)
 		   &allow-other-keys)
   "Gather documentation for Lisp symbols.
@@ -295,6 +296,10 @@ Keyword argument SUBTITLE is the subtitle text.  Default is empty.
 Keyword argument PROLOGUE is the prologue text.  Default is the
  package documentation string of PACKAGE.
 Keyword argument EPILOGUE is the epilogue text.  Default is empty.
+Keyword argument IDENTIFIER-NAMESPACE specifies the method for
+ creating unique identifiers.  A value of ‘nil’ means to create
+ a named UUID with a built-in namespace.  An integer means to
+ create a base 32 encoded hash value with that many digits.
 Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
  printing symbol names.
 
@@ -339,7 +344,8 @@ This may save some processing time."
     (setf symbols (nset-difference symbols exclude
 				   :key #'first-safe :test #'eq)))
   ;; Gather documentation strings.
-  (setf *dictionary* (mapcan #'get-doc symbols))
+  (let ((*id-namespace* (or identifier-namespace *id-namespace*)))
+    (setf *dictionary* (mapcan #'get-doc symbols)))
   ;; Remove undocumented elements.
   (if (null undocumented)
       (setf *dictionary* (delete nil *dictionary* :key #'doc-item-documentation))
@@ -409,16 +415,17 @@ This may save some processing time."
 		       (generic-functions t) (methods t)
 		       sort-predicate
 		       title subtitle prologue epilogue
+		       (identifier-namespace 8)
 		       (print-case :downcase print-case-supplied-p)
 		       data (output t) (output-format :text))
   "Generate documentation for Lisp symbols.
 
 Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
  GENERIC-FUNCTIONS, METHODS, SORT-PREDICATE, TITLE, SUBTITLE,
- PROLOGUE, EPILOGUE, and PRINT-CASE are equal to the respective
- keyword argument of the ‘gather-doc’ function.  However, these
- parameters are only evaluated if the DATA keyword argument is
- null.
+ PROLOGUE, EPILOGUE, IDENTIFIER-NAMESPACE, and PRINT-CASE are equal
+ to the respective keyword argument of the ‘gather-doc’ function.
+ However, these parameters are only used if the DATA keyword argument
+ is null.
 Keyword argument DATA is a documentation data structure as returned
  by the ‘gather-doc’ function.
 Keyword argument OUTPUT is the output destination.  Value is either
