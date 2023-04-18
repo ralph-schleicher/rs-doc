@@ -118,7 +118,91 @@
     doc))
 
 (defun get-doc (symbol)
-  "Return all documentation items for SYMBOL as a list."
+  "Return all documentation items for SYMBOL as a list.
+A symbol can have multiple definitions.  For each definition,
+the ‘get-doc’ function creates one documentation item.
+
+A documentation item is a property list.  Below is the list of
+documentation item properties together with their meaning.
+
+:namespace
+     The definition's namespace.  Value is either ‘:type’,
+     ‘:variable’, or ‘:function’.
+
+:category
+     The definition's category, i.e. a refinement of the
+     namespace.  A symbol can only have one definition per
+     namespace.  The exception are methods.
+
+     For a type, the category is either ‘:condition’,
+     ‘:structure’, ‘:class’, or ‘:type’.
+     For a variable, the category is either ‘:constant’,
+     ‘:symbol-macro’, or ‘:special’.
+     For a function, the category is either ‘:special-form’,
+     ‘:macro’, ‘:function’, ‘:generic-function’, or ‘:method’.
+
+:package
+     The symbol's package; ‘nil’ means that the symbol has no
+     home package.
+
+:symbol
+     The symbol itself.
+
+:documentation
+     The documentation string itself, or ‘nil’ if it is not
+     documented.
+
+:lambda-list
+     The symbol's lambda list.  Only meaningful for functions.
+
+:method-qualifiers
+     A list of method qualifiers, e.g. ‘:around’ or ‘list’.
+     Only meaningful for methods.
+
+:method-specializers
+     A list of method specializers, e.g., ‘t’ or ‘(eql 0)’.
+     Only meaningful for methods.
+
+:signature
+     The symbol's signature, i.e. a string of the form
+     ‘CATEGORY:PACKAGE-NAME:SYMBOL-NAME’.  For methods,
+     the signature is extended by the method qualifiers
+     and method specializers.
+
+:id
+     The named identifier of the signature.
+
+Examples:
+
+     (get-doc 'pi)
+      ⇒ ((:namespace :variable
+          :category :constant
+          :package #<PACKAGE \"COMMON-LISP\">
+          :symbol pi
+          :documentation nil
+          :signature \"CONSTANT:COMMON-LISP:PI\"
+          :id \"cfbbc9a1-a845-5786-af2c-e6ab0bd95ef2\"))
+
+     (get-doc 'print-object)
+      ⇒ ((:namespace :function
+          :category :generic-function
+          :package #<PACKAGE \"COMMON-LISP\">
+          :symbol print-object
+          :documentation nil
+          :lambda-list (object stream)
+          :signature \"GENERIC-FUNCTION:COMMON-LISP:PRINT-OBJECT\"
+          :id \"41bbe6e6-2b87-5bd7-b1ed-5ceb749141ac\")
+         (:namespace :function
+          :category :method
+          :package #<PACKAGE \"COMMON-LISP\">
+          :symbol print-object
+          :documentation nil
+          :lambda-list ((object symbol) stream)
+          :method-qualifiers nil
+          :method-specializers (symbol t)
+          :signature \"METHOD:COMMON-LISP:PRINT-OBJECT (SYMBOL T)\"
+          :id \"63f099be-c2cc-5ca0-b81a-e198a7cd3903\")
+         ...)"
   (nconc
    (when-let ((category (%typep symbol)))
      (list (make-doc category symbol (documentation symbol 'type))))
