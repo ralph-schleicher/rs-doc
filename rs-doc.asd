@@ -40,18 +40,16 @@
   :author "Ralph Schleicher <rs@ralph-schleicher.de>"
   :license "Modified BSD License"
   :version (:read-file-line "VERSION")
-  :depends-on (:asdf
-               :uiop
-               :alexandria
-               :iterate
-               :closer-mop
-               :cl-environments
-               :trivial-arguments
-               :html-template
-               :cl-who
-               :ironclad
-               :rs-basen
-               :uuid)
+  :depends-on ("alexandria"
+               "iterate"
+               "closer-mop"
+               "cl-environments"
+               "trivial-arguments"
+               "html-template"
+               "cl-who"
+               "ironclad"
+               "rs-basen"
+               "uuid")
   :serial t
   :components ((:file "packages")
                (:file "common")
