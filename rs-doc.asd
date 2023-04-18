@@ -49,6 +49,8 @@
 	       :trivial-arguments
 	       :html-template
 	       :cl-who
+	       :ironclad
+	       :rs-basen
 	       :uuid)
   :serial t
   :components ((:file "packages")
