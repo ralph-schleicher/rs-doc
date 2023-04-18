@@ -1,11 +1,12 @@
-RS-DOC
+DE.RALPH-SCHLEICHER.DOCUMENTATION
 
 Yet another documentation generator.
 
                                                                       [Function]
 gather-doc (&key package symbols include exclude undocumented
             (generic-functions t) (methods t) sort-predicate title subtitle
-            prologue epilogue (print-case :downcase) &allow-other-keys)
+            prologue epilogue (identifier-namespace 8) (print-case :downcase)
+            &allow-other-keys)
    Gather documentation for Lisp symbols.
 
    Keyword argument PACKAGE denotes a package.  Value is either a string
@@ -40,6 +41,10 @@ gather-doc (&key package symbols include exclude undocumented
    Keyword argument PROLOGUE is the prologue text.  Default is the
     package documentation string of PACKAGE.
    Keyword argument EPILOGUE is the epilogue text.  Default is empty.
+   Keyword argument IDENTIFIER-NAMESPACE specifies the method for
+    creating unique identifiers.  A value of ‘nil’ means to create
+    a named UUID with a built-in namespace.  An integer means to
+    create a base 32 encoded hash value with that many digits.
    Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
     printing symbol names.
 
@@ -64,16 +69,16 @@ gather-doc (&key package symbols include exclude undocumented
                                                                       [Function]
 generate-doc (&rest arguments &key package symbols include exclude undocumented
               (generic-functions t) (methods t) sort-predicate title subtitle
-              prologue epilogue (print-case :downcase) data (output t)
-              (output-format :text))
+              prologue epilogue (identifier-namespace 8) (print-case :downcase)
+              data (output t) (output-format :text))
    Generate documentation for Lisp symbols.
 
    Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
     GENERIC-FUNCTIONS, METHODS, SORT-PREDICATE, TITLE, SUBTITLE,
-    PROLOGUE, EPILOGUE, and PRINT-CASE are equal to the respective
-    keyword argument of the ‘gather-doc’ function.  However, these
-    parameters are only evaluated if the DATA keyword argument is
-    null.
+    PROLOGUE, EPILOGUE, IDENTIFIER-NAMESPACE, and PRINT-CASE are equal
+    to the respective keyword argument of the ‘gather-doc’ function.
+    However, these parameters are only used if the DATA keyword argument
+    is null.
    Keyword argument DATA is a documentation data structure as returned
     by the ‘gather-doc’ function.
    Keyword argument OUTPUT is the output destination.  Value is either
@@ -225,7 +230,7 @@ generate-doc (&rest arguments &key package symbols include exclude undocumented
              List of method specializers (class name ‘t’ is not omitted).
 
              TMPL_VAR METHOD-SPECIALIZER
-                  The method specializer, for exmaple, ‘t’ or ‘(eql 0)’.
+                  The method specializer, e.g. ‘t’ or ‘(eql 0)’.
 
              TMPL_IF IS-EQL-SPECIALIZER
                   True if the method specializer is an ‘eql’ specializer.

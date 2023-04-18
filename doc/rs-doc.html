@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta charset="utf-8"/>
-  <title>RS-DOC</title>
+  <title>DE.RALPH-SCHLEICHER.DOCUMENTATION</title>
   <style type="text/css">
    *{margin:0;border:0;padding:0}
    body{color:#000;background-color:#fff;font-family:sans-serif;padding:1em;min-width:46em}
@@ -37,7 +37,7 @@
  </head>
  <body>
   <div class="title">
-   <h1>RS-DOC</h1>
+   <h1>DE.RALPH-SCHLEICHER.DOCUMENTATION</h1>
   </div>
   <div class="prologue">
    <pre>Yet another documentation generator.</pre>
@@ -47,49 +47,49 @@
    <div class="contents-listing">
     <ul>
      <li>
-      <a href="#_cc6619eb-2399-5c69-a57a-c896096435ff">
+      <a href="#pgzd5izp">
        <span class="category">Function</span>
        <span class="symbol">gather-doc</span>
       </a>
      </li>
      <li>
-      <a href="#_63e72251-8da6-593d-a01e-0ae104b71e91">
+      <a href="#sd85hsxz">
        <span class="category">Function</span>
        <span class="symbol">generate-doc</span>
       </a>
      </li>
      <li>
-      <a href="#_da73840b-d43d-5eba-a556-41438e2b1468">
+      <a href="#x28je4dv">
        <span class="category">Special Variable</span>
        <span class="symbol">*text-width*</span>
       </a>
      </li>
      <li>
-      <a href="#_af760eb0-0884-55d2-b774-0c936e8dad91">
+      <a href="#soiuxh7u">
        <span class="category">Special Variable</span>
        <span class="symbol">*text-wrap*</span>
       </a>
      </li>
      <li>
-      <a href="#_a9ec9573-2de2-571d-bd31-0ca40478e76b">
+      <a href="#q4rqzul8">
        <span class="category">Special Variable</span>
        <span class="symbol">*text-indent*</span>
       </a>
      </li>
      <li>
-      <a href="#_9852a986-bec4-5edd-824a-6bc5c9aafaab">
+      <a href="#mbj2msi2">
        <span class="category">Special Variable</span>
        <span class="symbol">*html-template*</span>
       </a>
      </li>
      <li>
-      <a href="#_f0d1b909-0e9b-5c22-be94-54927fa017b0">
+      <a href="#ocmnzfqj">
        <span class="category">Special Variable</span>
        <span class="symbol">*html-values*</span>
       </a>
      </li>
      <li>
-      <a href="#_22717cbe-0611-5c0e-b49f-c87f0998b6d4">
+      <a href="#nhdayttk">
        <span class="category">Special Variable</span>
        <span class="symbol">*html-resources*</span>
       </a>
@@ -98,7 +98,7 @@
    </div>
   </div>
   <div class="dictionary">
-   <div class="definition" id="_cc6619eb-2399-5c69-a57a-c896096435ff">
+   <div class="definition" id="pgzd5izp">
     <div class="signature">
      <table class="signature">
       <colgroup>
@@ -109,7 +109,7 @@
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">gather-doc</span></a></td>
-	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">identifier-namespace</span>&nbsp;<span class="init-form">8</span>) (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
 	<td class="category"><span class="category">Function</span></td>
        </tr>
       </tbody>
@@ -150,6 +150,10 @@ Keyword argument SUBTITLE is the subtitle text.  Default is empty.
 Keyword argument PROLOGUE is the prologue text.  Default is the
  package documentation string of PACKAGE.
 Keyword argument EPILOGUE is the epilogue text.  Default is empty.
+Keyword argument IDENTIFIER-NAMESPACE specifies the method for
+ creating unique identifiers.  A value of ‘nil’ means to create
+ a named UUID with a built-in namespace.  An integer means to
+ create a base 32 encoded hash value with that many digits.
 Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
  printing symbol names.
 
@@ -172,7 +176,7 @@ parameters.  For example:
 This may save some processing time.</pre>
     </div>
    </div>
-   <div class="definition" id="_63e72251-8da6-593d-a01e-0ae104b71e91">
+   <div class="definition" id="sd85hsxz">
     <div class="signature">
      <table class="signature">
       <colgroup>
@@ -183,7 +187,7 @@ This may save some processing time.</pre>
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">generate-doc</span></a></td>
-	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">arguments</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="variable">data</span> (<span class="variable">output</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">output-format</span>&nbsp;<span class="init-form">:text</span>))</span></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">arguments</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">identifier-namespace</span>&nbsp;<span class="init-form">8</span>) (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="variable">data</span> (<span class="variable">output</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">output-format</span>&nbsp;<span class="init-form">:text</span>))</span></td>
 	<td class="category"><span class="category">Function</span></td>
        </tr>
       </tbody>
@@ -194,10 +198,10 @@ This may save some processing time.</pre>
 
 Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
  GENERIC-FUNCTIONS, METHODS, SORT-PREDICATE, TITLE, SUBTITLE,
- PROLOGUE, EPILOGUE, and PRINT-CASE are equal to the respective
- keyword argument of the ‘gather-doc’ function.  However, these
- parameters are only evaluated if the DATA keyword argument is
- null.
+ PROLOGUE, EPILOGUE, IDENTIFIER-NAMESPACE, and PRINT-CASE are equal
+ to the respective keyword argument of the ‘gather-doc’ function.
+ However, these parameters are only used if the DATA keyword argument
+ is null.
 Keyword argument DATA is a documentation data structure as returned
  by the ‘gather-doc’ function.
 Keyword argument OUTPUT is the output destination.  Value is either
@@ -208,7 +212,7 @@ Keyword argument OUTPUT-FORMAT is the output file format.  Value is
  either :text or :html.  Default is to generate plain text.</pre>
     </div>
    </div>
-   <div class="definition" id="_da73840b-d43d-5eba-a556-41438e2b1468">
+   <div class="definition" id="x28je4dv">
     <div class="signature">
      <table class="signature">
       <colgroup>
@@ -229,7 +233,7 @@ Keyword argument OUTPUT-FORMAT is the output file format.  Value is
      <pre>The text width.  Value has to be at least 40.</pre>
     </div>
    </div>
-   <div class="definition" id="_af760eb0-0884-55d2-b774-0c936e8dad91">
+   <div class="definition" id="soiuxh7u">
     <div class="signature">
      <table class="signature">
       <colgroup>
@@ -250,7 +254,7 @@ Keyword argument OUTPUT-FORMAT is the output file format.  Value is
      <pre>Whether or not to wrap long lambda lists.</pre>
     </div>
    </div>
-   <div class="definition" id="_a9ec9573-2de2-571d-bd31-0ca40478e76b">
+   <div class="definition" id="q4rqzul8">
     <div class="signature">
      <table class="signature">
       <colgroup>
@@ -272,7 +276,7 @@ Keyword argument OUTPUT-FORMAT is the output file format.  Value is
 Non-null is the number of characters.</pre>
     </div>
    </div>
-   <div class="definition" id="_9852a986-bec4-5edd-824a-6bc5c9aafaab">
+   <div class="definition" id="mbj2msi2">
     <div class="signature">
      <table class="signature">
       <colgroup>
@@ -417,7 +421,7 @@ TMPL_LOOP DICTIONARY
           List of method specializers (class name ‘t’ is not omitted).
 
           TMPL_VAR METHOD-SPECIALIZER
-               The method specializer, for exmaple, ‘t’ or ‘(eql 0)’.
+               The method specializer, e.g. ‘t’ or ‘(eql 0)’.
 
           TMPL_IF IS-EQL-SPECIALIZER
                True if the method specializer is an ‘eql’ specializer.
@@ -443,7 +447,7 @@ TMPL_VAR DOCUMENTATION-TOOL-VERSION
      Information about the documentation tool.</pre>
     </div>
    </div>
-   <div class="definition" id="_f0d1b909-0e9b-5c22-be94-54927fa017b0">
+   <div class="definition" id="ocmnzfqj">
     <div class="signature">
      <table class="signature">
       <colgroup>
@@ -464,7 +468,7 @@ TMPL_VAR DOCUMENTATION-TOOL-VERSION
      <pre>Additional HTML template values.</pre>
     </div>
    </div>
-   <div class="definition" id="_22717cbe-0611-5c0e-b49f-c87f0998b6d4">
+   <div class="definition" id="nhdayttk">
     <div class="signature">
      <table class="signature">
       <colgroup>
