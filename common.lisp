@@ -35,6 +35,14 @@
 
 (in-package :rs-doc)
 
+(defmacro defconst (name value &optional doc)
+  "Define a constant variable.
+
+This is like ‘defconstant’ except that the initially set value
+is reused when the ‘defconst’ form is evaluated again."
+  `(defconstant ,name (if (boundp ',name) (symbol-value ',name) ,value)
+     ,@(when doc (list doc))))
+
 (defmacro fixme ()
   `(error "Should not happen."))
 
@@ -191,7 +199,10 @@ where NAMESPACE is a keyword and NAME is a string.")
 
 ;;;; Miscellaneous definitions.
 
-(defvar *id-namespace* (uuid:make-uuid-from-string "ed8931fc-9ce6-4b3d-9f51-2c0b2bd1ec71")
+(defconst default-uuid-namespace (uuid:make-uuid-from-string "ed8931fc-9ce6-4b3d-9f51-2c0b2bd1ec71")
+  "The default namespace for creating a named UUID.")
+
+(defvar *id-namespace* default-uuid-namespace
   "Namespace for creating a named UUID.")
 
 (defun make-id (name)
