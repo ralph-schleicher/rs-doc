@@ -199,40 +199,60 @@ where NAMESPACE is a keyword and NAME is a string.")
 
 ;;;; Miscellaneous definitions.
 
-(defconst default-uuid-namespace (uuid:make-uuid-from-string "ed8931fc-9ce6-4b3d-9f51-2c0b2bd1ec71")
+;; Can't define an UUID as a constant even if defining a proper
+;; ‘make-load-form’ method.  That definitely smells like a bug.
+(defvar default-uuid-namespace (uuid:make-uuid-from-string "ed8931fc-9ce6-4b3d-9f51-2c0b2bd1ec71")
   "The default namespace for creating a named UUID.")
 
-(defvar *id-namespace* default-uuid-namespace
+(defvar *uuid-namespace* default-uuid-namespace
   "Namespace for creating a named UUID.")
+(declaim (type uuid:uuid *uuid-namespace*))
 
+(defun make-named-uuid (name)
+  "Create a named UUID for string NAME.
+Affected by ‘*uuid-namespace*’."
+  (nstring-downcase
+   (with-output-to-string (stream)
+     (print-object (uuid:make-v5-uuid *uuid-namespace* name) stream))))
+
+(defun make-named-uuid* (name)
+  "Like ‘make-named-uuid’ but add a leading underscore character."
+  (concatenate 'string "_" (make-named-uuid name)))
+
+(defvar *base32-id-length* 8
+  "Length of a base 32 encoded identifier.")
+(declaim (type (integer 4 16) *base32-id-length*))
+
+(defun make-base32-id (name)
+  "Create a base 32 encoded identifier for string NAME.
+Affected by ‘*base32-id-length*’."
+  ;; A 160 bit hash value creates a sequence of 32 base 32 digits.
+  (let* ((seq (rs-basen:basen-encode
+               nil (ironclad:digest-sequence :ripemd-160
+                    (babel:string-to-octets
+                     name :encoding :utf-8 :use-bom nil :errorp t))
+               :alphabet rs-basen:human-base32-alphabet))
+         (start (position-if #'alpha-char-p seq)))
+    (let* ((len *base32-id-length*)
+           (limit (- (length seq) len)))
+      (when (or (null start) (> start limit))
+        (error "Probability ~R to one against and falling."
+               (ceiling (expt 6/32 (- limit)))))
+      (subseq seq start (+ start len)))))
+
+(defvar *make-id-hook* #'make-base32-id
+  "The function to create a unique identifier.")
+
+;; https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id
 (defun make-id (name)
-  "Create an identifier for string NAME.
-If special variable ‘*id-namespace*’ is an ‘uuid:uuid’ object, create
-a named UUID with a leading underscore character.  If ‘*id-namespace*’
-is an integer, create an identifier with ‘*id-namespace*’ base 32
-digits starting with a letter."
-  (etypecase *id-namespace*
-    (uuid:uuid
-     (nstring-downcase
-      (with-output-to-string (stream)
-        (write-char #\_ stream)
-        (print-object (uuid:make-v5-uuid *id-namespace* name) stream))))
-    ((integer 4 16)
-     ;; A 160 bit hash value creates a sequence of 32 base 32 digits.
-     (let* ((seq (rs-basen:basen-encode
-                  nil (ironclad:digest-sequence :ripemd-160
-                       (babel:string-to-octets
-                        name :encoding :utf-8 :use-bom nil :errorp t))
-                  :alphabet rs-basen:human-base32-alphabet))
-            (start (position-if #'alpha-char-p seq)))
-       (let* ((len *id-namespace*)
-              (limit (- (length seq) len)))
-         (when (or (null start) (> start limit))
-           (error "Probability ~R to one against and falling."
-                  (ceiling (/ (expt 6/32 limit)))))
-         (subseq seq start (+ start len)))))
+  "Create a unique identifier for string NAME."
+  (etypecase *make-id-hook*
     (function
-     (funcall *id-namespace* name))))
+     (funcall *make-id-hook* name))
+    (null
+     ;; To easily restore the legacy behaviour.
+     (let ((*uuid-namespace* default-uuid-namespace))
+       (make-named-uuid* name)))))
 
 (defun make-keyword (&rest strings)
   "Concatenate one or more string designators
