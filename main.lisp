@@ -48,8 +48,9 @@
         #+sbcl
         (sb-int:info :type :kind symbol)
         #-(or sbcl)
-        (subtypep symbol t))
-       (or (when (subtypep symbol 'condition)
+        (or (eq symbol 'eql)
+            (subtypep symbol t)))
+       (or (when (ignore-errors (subtypep symbol 'condition))
              :condition)
            (alexandria:when-let ((class (find-class symbol nil)))
              (cond ((typep class 'structure-class)
