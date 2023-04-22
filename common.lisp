@@ -303,6 +303,13 @@ Second argument CATEGORY is a keyword identifying the type of OBJECT.
  variable name), ‘:specialized-parameter’, ‘:optional-parameter’,
  ‘:keyword-parameter’, ‘:auxiliary-variable’, or ‘:lambda-list’.
 Third argument SEPARATORP is true if OBJECT is not the first element."
+  ;; Convert ‘(ARG1 ... ARGN . ARGS)’ into ‘(ARG1 ... ARGN &rest ARGS)’.
+  (iter (for end :from 1)
+        (for list :on lambda-list)
+        (for rest = (rest list))
+        (when (and rest (atom rest))
+          (setf lambda-list (nconc (subseq lambda-list 0 end) (list '&rest rest)))
+          (finish)))
   (iter (with lambda-list-keyword)
         (for object :in lambda-list)
         (if (listp object)
