@@ -385,12 +385,17 @@ If optional second argument READABLE is true, print OBJECT by
   "Convert all elements of OBJECT into their printed representation."
   (cond ((symbolp object)
          (%symbol-name object))
+        ((stringp object)
+         ;; SBCL prints base strings as ‘#A((3) base-char . "foo")’.
+         (prin1-to-string (coerce object '(vector character))))
         ((atom object)
          (prin1-to-string object))
         ((not (listp (rest object)))
          (cons (pr1 (first object)) (pr1 (rest object))))
         ((and (= (length object) 2) (eq (first object) 'quote))
          (concatenate 'string "'" (str (second object))))
+        ((and (= (length object) 2) (eq (first object) 'function))
+         (concatenate 'string "#'" (str (second object))))
         ((mapcar #'pr1 object))))
 
 (defun str (object)
