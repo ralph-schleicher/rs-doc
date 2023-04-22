@@ -286,7 +286,7 @@ of the generated HTML page.")
                        (for category = (get-doc-item doc :category))
                        (for package = (get-doc-item doc :package))
                        (for symbol = (get-doc-item doc :symbol))
-                       (collect `(:id ,(get-doc-item doc :id)
+                       (collect `(:id ,(make-id (get-doc-item doc :signature))
                                   :namespace ,(esc (namespace-name namespace))
                                   ,(make-keyword "IN-" namespace "-NAMESPACE") t
                                   :category ,(esc (category-name category))
