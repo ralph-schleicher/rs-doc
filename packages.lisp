@@ -67,4 +67,9 @@
            #:compare-doc-item)
   (:documentation "Yet another documentation generator."))
 
+(defpackage #:de.ralph-schleicher.documentation-user
+  (:nicknames :rs-doc-user)
+  (:use :common-lisp
+        :rs-doc))
+
 ;;; packages.lisp ends here
