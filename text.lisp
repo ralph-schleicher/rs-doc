@@ -45,6 +45,28 @@
   "Whether or not to indent the documentation.
 Non-null is the number of characters.")
 
+(defun text-lambda-list-element (object category separatorp)
+  (declare (ignore separatorp))
+  (if (consp object)
+      (ecase category
+        (:lambda-list
+         object)
+        ((:specialized-parameter
+          :optional-parameter
+          :keyword-parameter
+          :auxiliary-variable)
+         (if (second object)
+             (list (%symbol-name (first object) t) (pr1 (second object)))
+           (%symbol-name (first object) t))))
+    (ecase category
+      (:keyword
+       object)
+      (:parameter
+       (%symbol-name object t)))))
+
+(defun text-lambda-list (lambda-list &optional recursivep)
+  (map-lambda-list #'text-lambda-list-element lambda-list recursivep))
+
 (defun text-doc ()
   (check-type *text-width* (integer 40))
   (check-type *text-indent* (or null (integer 0)))
@@ -75,7 +97,10 @@ Non-null is the number of characters.")
             (new-paragraph)
             (format t "~V<[~A]~>~%~A~:[~; ~:A~]~%"
                     *text-width* (category-name category) symbol
-                    (eq (namespace category) :function) (pr1 (doc-item-lambda-list doc)))
+                    (eq (namespace category) :function)
+                    (text-lambda-list
+                     (get-doc-item doc :lambda-list)
+                     (eq category :macro)))
             (for text = (doc-item-documentation doc))
             (if (not indent)
                 (progn
