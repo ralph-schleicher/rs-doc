@@ -204,9 +204,9 @@ Examples:
    (when-let ((category (%functionp symbol)))
      (cons (make-doc category symbol (documentation symbol 'function)
                      :lambda-list (%function-lambda-list
-                                   #+sbcl
+                                   #+(or sbcl clozure)
                                    symbol ;a function designator
-                                   #-(or sbcl)
+                                   #-(or sbcl clozure)
                                    (fdefinition symbol)
                                    (eq category :macro)))
            ;; TODO: Only return methods where the specialized lambda
