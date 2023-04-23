@@ -5,6 +5,7 @@
 (defparameter *prefix* (asdf:system-source-directory "rs-doc"))
 
 (let ((doc (gather-doc
+            :title "RS-DOC"
             :package :rs-doc
             :symbols '(get-doc
                        gather-doc
