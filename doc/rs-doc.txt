@@ -1,12 +1,93 @@
-DE.RALPH-SCHLEICHER.DOCUMENTATION
+RS-DOC
 
 Yet another documentation generator.
 
                                                                       [Function]
+get-doc (symbol)
+   Return all documentation items for SYMBOL as a list.
+   A symbol can have multiple definitions.  For each definition,
+   the ‘get-doc’ function creates one documentation item.
+
+   A documentation item is a property list.  Below is the list of
+   documentation item properties together with their meaning.
+
+   :namespace
+        The definition's namespace.  Value is either ‘:type’,
+        ‘:variable’, or ‘:function’.
+
+   :category
+        The definition's category, i.e. a refinement of the
+        namespace.  A symbol can only have one definition per
+        namespace.  The exception are methods.
+
+        For a type, the category is either ‘:condition’,
+        ‘:structure’, ‘:class’, or ‘:type’.
+        For a variable, the category is either ‘:constant’,
+        ‘:symbol-macro’, or ‘:special’.
+        For a function, the category is either ‘:special-form’,
+        ‘:macro’, ‘:function’, ‘:generic-function’, or ‘:method’.
+
+   :package
+        The symbol's package; ‘nil’ means that the symbol has no
+        home package.
+
+   :symbol
+        The symbol itself.
+
+   :documentation
+        The documentation string itself, or ‘nil’ if it is not
+        documented.
+
+   :lambda-list
+        The symbol's lambda list.  Only meaningful for functions.
+
+   :method-qualifiers
+        A list of method qualifiers, e.g. ‘:around’ or ‘list’.
+        Only meaningful for methods.
+
+   :method-specializers
+        A list of method specializers, e.g., ‘t’ or ‘(eql 0)’.
+        Only meaningful for methods.
+
+   :signature
+        The symbol's signature, i.e. a string of the form
+        ‘CATEGORY:PACKAGE-NAME:SYMBOL-NAME’.  For methods,
+        the signature is extended by the method qualifiers
+        and method specializers.
+
+   Examples:
+
+        (get-doc 'pi)
+         ⇒ ((:namespace :variable
+             :category :constant
+             :package #<PACKAGE "COMMON-LISP">
+             :symbol pi
+             :documentation nil
+             :signature "CONSTANT:COMMON-LISP:PI"))
+
+        (get-doc 'print-object)
+         ⇒ ((:namespace :function
+             :category :generic-function
+             :package #<PACKAGE "COMMON-LISP">
+             :symbol print-object
+             :documentation nil
+             :lambda-list (object stream)
+             :signature "GENERIC-FUNCTION:COMMON-LISP:PRINT-OBJECT")
+            (:namespace :function
+             :category :method
+             :package #<PACKAGE "COMMON-LISP">
+             :symbol print-object
+             :documentation nil
+             :lambda-list ((object symbol) stream)
+             :method-qualifiers nil
+             :method-specializers (symbol t)
+             :signature "METHOD:COMMON-LISP:PRINT-OBJECT (SYMBOL T)")
+            ...)
+
+                                                                      [Function]
 gather-doc (&key package symbols include exclude undocumented
             (generic-functions t) (methods t) sort-predicate title subtitle
-            prologue epilogue (identifier-namespace 8) (print-case :downcase)
-            &allow-other-keys)
+            prologue epilogue (print-case :downcase) &allow-other-keys)
    Gather documentation for Lisp symbols.
 
    Keyword argument PACKAGE denotes a package.  Value is either a string
@@ -41,10 +122,6 @@ gather-doc (&key package symbols include exclude undocumented
    Keyword argument PROLOGUE is the prologue text.  Default is the
     package documentation string of PACKAGE.
    Keyword argument EPILOGUE is the epilogue text.  Default is empty.
-   Keyword argument IDENTIFIER-NAMESPACE specifies the method for
-    creating unique identifiers.  A value of ‘nil’ means to create
-    a named UUID with a built-in namespace.  An integer means to
-    create a base 32 encoded hash value with that many digits.
    Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
     printing symbol names.
 
@@ -69,16 +146,15 @@ gather-doc (&key package symbols include exclude undocumented
                                                                       [Function]
 generate-doc (&rest arguments &key package symbols include exclude undocumented
               (generic-functions t) (methods t) sort-predicate title subtitle
-              prologue epilogue (identifier-namespace 8) (print-case :downcase)
-              data (output t) (output-format :text))
+              prologue epilogue (print-case :downcase) data (output t)
+              (output-format :text))
    Generate documentation for Lisp symbols.
 
    Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
     GENERIC-FUNCTIONS, METHODS, SORT-PREDICATE, TITLE, SUBTITLE,
-    PROLOGUE, EPILOGUE, IDENTIFIER-NAMESPACE, and PRINT-CASE are equal
-    to the respective keyword argument of the ‘gather-doc’ function.
-    However, these parameters are only used if the DATA keyword argument
-    is null.
+    PROLOGUE, EPILOGUE, and PRINT-CASE are equal to the respective
+    keyword argument of the ‘gather-doc’ function.  However, these
+    parameters are only used if the DATA keyword argument is null.
    Keyword argument DATA is a documentation data structure as returned
     by the ‘gather-doc’ function.
    Keyword argument OUTPUT is the output destination.  Value is either
@@ -87,6 +163,11 @@ generate-doc (&rest arguments &key package symbols include exclude undocumented
     Default is t.
    Keyword argument OUTPUT-FORMAT is the output file format.  Value is
     either :text or :html.  Default is to generate plain text.
+
+                                                              [Special Variable]
+*lambda-list-init-form*
+   Whether or not to include the initialization form
+   for optional and keyword parameters.
 
                                                               [Special Variable]
 *text-width*

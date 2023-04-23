@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta charset="utf-8"/>
-  <title>DE.RALPH-SCHLEICHER.DOCUMENTATION</title>
+  <title>RS-DOC</title>
   <style type="text/css">
    *{margin:0;border:0;padding:0}
    body{color:#000;background-color:#fff;font-family:sans-serif;padding:1em;min-width:46em}
@@ -37,7 +37,7 @@
  </head>
  <body>
   <div class="title">
-   <h1>DE.RALPH-SCHLEICHER.DOCUMENTATION</h1>
+   <h1>RS-DOC</h1>
   </div>
   <div class="prologue">
    <pre>Yet another documentation generator.</pre>
@@ -46,6 +46,12 @@
    <h2>Contents</h2>
    <div class="contents-listing">
     <ul>
+     <li>
+      <a href="#hcjj54xm">
+       <span class="category">Function</span>
+       <span class="symbol">get-doc</span>
+      </a>
+     </li>
      <li>
       <a href="#pgzd5izp">
        <span class="category">Function</span>
@@ -56,6 +62,12 @@
       <a href="#sd85hsxz">
        <span class="category">Function</span>
        <span class="symbol">generate-doc</span>
+      </a>
+     </li>
+     <li>
+      <a href="#tjfqsxgk">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*lambda-list-init-form*</span>
       </a>
      </li>
      <li>
@@ -98,6 +110,105 @@
    </div>
   </div>
   <div class="dictionary">
+   <div class="definition" id="hcjj54xm">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">get-doc</span></a></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="variable">symbol</span>)</span></td>
+	<td class="category"><span class="category">Function</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Return all documentation items for SYMBOL as a list.
+A symbol can have multiple definitions.  For each definition,
+the ‘get-doc’ function creates one documentation item.
+
+A documentation item is a property list.  Below is the list of
+documentation item properties together with their meaning.
+
+:namespace
+     The definition's namespace.  Value is either ‘:type’,
+     ‘:variable’, or ‘:function’.
+
+:category
+     The definition's category, i.e. a refinement of the
+     namespace.  A symbol can only have one definition per
+     namespace.  The exception are methods.
+
+     For a type, the category is either ‘:condition’,
+     ‘:structure’, ‘:class’, or ‘:type’.
+     For a variable, the category is either ‘:constant’,
+     ‘:symbol-macro’, or ‘:special’.
+     For a function, the category is either ‘:special-form’,
+     ‘:macro’, ‘:function’, ‘:generic-function’, or ‘:method’.
+
+:package
+     The symbol's package; ‘nil’ means that the symbol has no
+     home package.
+
+:symbol
+     The symbol itself.
+
+:documentation
+     The documentation string itself, or ‘nil’ if it is not
+     documented.
+
+:lambda-list
+     The symbol's lambda list.  Only meaningful for functions.
+
+:method-qualifiers
+     A list of method qualifiers, e.g. ‘:around’ or ‘list’.
+     Only meaningful for methods.
+
+:method-specializers
+     A list of method specializers, e.g., ‘t’ or ‘(eql 0)’.
+     Only meaningful for methods.
+
+:signature
+     The symbol's signature, i.e. a string of the form
+     ‘CATEGORY:PACKAGE-NAME:SYMBOL-NAME’.  For methods,
+     the signature is extended by the method qualifiers
+     and method specializers.
+
+Examples:
+
+     (get-doc 'pi)
+      ⇒ ((:namespace :variable
+          :category :constant
+          :package #&lt;PACKAGE "COMMON-LISP"&gt;
+          :symbol pi
+          :documentation nil
+          :signature "CONSTANT:COMMON-LISP:PI"))
+
+     (get-doc 'print-object)
+      ⇒ ((:namespace :function
+          :category :generic-function
+          :package #&lt;PACKAGE "COMMON-LISP"&gt;
+          :symbol print-object
+          :documentation nil
+          :lambda-list (object stream)
+          :signature "GENERIC-FUNCTION:COMMON-LISP:PRINT-OBJECT")
+         (:namespace :function
+          :category :method
+          :package #&lt;PACKAGE "COMMON-LISP"&gt;
+          :symbol print-object
+          :documentation nil
+          :lambda-list ((object symbol) stream)
+          :method-qualifiers nil
+          :method-specializers (symbol t)
+          :signature "METHOD:COMMON-LISP:PRINT-OBJECT (SYMBOL T)")
+         ...)</pre>
+    </div>
+   </div>
    <div class="definition" id="pgzd5izp">
     <div class="signature">
      <table class="signature">
@@ -109,7 +220,7 @@
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">gather-doc</span></a></td>
-	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">identifier-namespace</span>&nbsp;<span class="init-form">8</span>) (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
 	<td class="category"><span class="category">Function</span></td>
        </tr>
       </tbody>
@@ -150,10 +261,6 @@ Keyword argument SUBTITLE is the subtitle text.  Default is empty.
 Keyword argument PROLOGUE is the prologue text.  Default is the
  package documentation string of PACKAGE.
 Keyword argument EPILOGUE is the epilogue text.  Default is empty.
-Keyword argument IDENTIFIER-NAMESPACE specifies the method for
- creating unique identifiers.  A value of ‘nil’ means to create
- a named UUID with a built-in namespace.  An integer means to
- create a base 32 encoded hash value with that many digits.
 Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
  printing symbol names.
 
@@ -187,7 +294,7 @@ This may save some processing time.</pre>
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">generate-doc</span></a></td>
-	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">arguments</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">identifier-namespace</span>&nbsp;<span class="init-form">8</span>) (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="variable">data</span> (<span class="variable">output</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">output-format</span>&nbsp;<span class="init-form">:text</span>))</span></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">arguments</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="variable">data</span> (<span class="variable">output</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">output-format</span>&nbsp;<span class="init-form">:text</span>))</span></td>
 	<td class="category"><span class="category">Function</span></td>
        </tr>
       </tbody>
@@ -198,10 +305,9 @@ This may save some processing time.</pre>
 
 Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
  GENERIC-FUNCTIONS, METHODS, SORT-PREDICATE, TITLE, SUBTITLE,
- PROLOGUE, EPILOGUE, IDENTIFIER-NAMESPACE, and PRINT-CASE are equal
- to the respective keyword argument of the ‘gather-doc’ function.
- However, these parameters are only used if the DATA keyword argument
- is null.
+ PROLOGUE, EPILOGUE, and PRINT-CASE are equal to the respective
+ keyword argument of the ‘gather-doc’ function.  However, these
+ parameters are only used if the DATA keyword argument is null.
 Keyword argument DATA is a documentation data structure as returned
  by the ‘gather-doc’ function.
 Keyword argument OUTPUT is the output destination.  Value is either
@@ -210,6 +316,28 @@ Keyword argument OUTPUT is the output destination.  Value is either
  Default is t.
 Keyword argument OUTPUT-FORMAT is the output file format.  Value is
  either :text or :html.  Default is to generate plain text.</pre>
+    </div>
+   </div>
+   <div class="definition" id="tjfqsxgk">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*lambda-list-init-form*</span></a></td>
+	<td class="lambda-list"></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Whether or not to include the initialization form
+for optional and keyword parameters.</pre>
     </div>
    </div>
    <div class="definition" id="x28je4dv">
