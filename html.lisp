@@ -272,6 +272,177 @@ of the generated HTML page.")
                  lambda-list specializers)
          (html-lambda-list (nthcdr (length specializers) lambda-list) nil t)))
 
+(defvar *html-cross-reference-template* "<a href=\"#<!-- TMPL_VAR ID -->\"><span class=\"symbol\"><!-- TMPL_VAR SYMBOL --></span></a>"
+  "The HTML template for a cross reference.
+See the ‘*html-template*’ special variable for a description of the
+template tags.  Template values are provided by the dictionary entry
+of the cross reference target.")
+
+;; Work variables.
+(defvar html-cross-reference-alist)
+(defvar html-cross-reference-regex)
+(defvar html-cross-reference-source)
+(defvar html-cross-reference-template)
+
+(defmacro with-html-cross-references (dictionary &body body)
+  "An environment for processing HTML cross references.
+
+Argument DICTIONARY is the list of dictionary entries for the
+ HTML template.  See the ‘html-values’ function for details.
+
+The body calls ‘html-add-cross-references’ to replace symbol
+names with the content of ‘*html-cross-reference-template*’ in
+a documentation string."
+  `(let ((html-cross-reference-alist ())
+         (html-cross-reference-regex ())
+         (html-cross-reference-source nil)
+         (html-cross-reference-template nil))
+     (html-setup-cross-references ,dictionary)
+     ,@body))
+
+(defun html-setup-cross-references (items)
+  "Initialize HTML cross references."
+  ;; Collect all symbol names.
+  (iter (for item :in items)
+        ;; This is the escaped symbol name as it may appear in a
+        ;; documentation string.
+        (for symbol = (getf item :symbol))
+        ;; Be case insensitive.
+        (for cell = (assoc symbol html-cross-reference-alist :test #'string-equal))
+        (if (null cell)
+            (push (list symbol item) html-cross-reference-alist)
+          (push item (cdr cell))))
+  ;; Create the regular expressions (a property list).  Documentation
+  ;; strings should use phrases like “See ‘fubar’” or “See the ‘fubar’
+  ;; function”.
+  (setf html-cross-reference-regex
+        (list :symbol (let ((category #.(concatenate 'string
+                                                     "package|"
+                                                     "condition|structure|class|type|"
+                                                     "constant|symbol\\s+macro|(?:special\\s+)?variable|"
+                                                     "special\\s+form|macro|function|generic\\s+function|"
+                                                     "methods?")))
+                        ;; First group matches an optional category prefix,
+                        ;; second group matches the symbol name, third group
+                        ;; matches an optional category suffix.
+                        (cl-ppcre:create-scanner
+                         (with-output-to-string (out)
+                           (format out "(?:\\b(~A)\\s+)?[‘`](" category)
+                           (iter (for cell :in html-cross-reference-alist)
+                                 (for symbol = (car cell))
+                                 (unless (first-iteration-p)
+                                   (write-string "|" out))
+                                 (write-string (cl-ppcre:quote-meta-chars symbol) out))
+                           (format out ")[’'](?:\\s+(~A)\\b)?" category))
+                         :case-insensitive-mode t))
+              ;; Scanners for evaluating a category prefix/suffix.
+              :package (cl-ppcre:create-scanner
+                        "\\A(?:package)\\z"
+                        :case-insensitive-mode t)
+              :type (cl-ppcre:create-scanner
+                     "\\A(?:condition|structure|class|type)\\z"
+                     :case-insensitive-mode t)
+              :variable (cl-ppcre:create-scanner
+                         "\\A(?:constant|symbol\\s+macro|(?:special\\s+)?variable)\\z"
+                         :case-insensitive-mode t)
+              :function (cl-ppcre:create-scanner
+                         "\\A(?:special\\s+form|macro|function|generic\\s+function)\\z"
+                         :case-insensitive-mode t)
+              :method (cl-ppcre:create-scanner
+                       "\\A(?:methods?)\\z"
+                       :case-insensitive-mode t)))
+  ;; Create the HTML template printer for a cross reference.
+  (setf html-cross-reference-template
+        (html-template:create-template-printer *html-cross-reference-template*))
+  ())
+
+(defun html-cross-reference-regex (tag)
+  "Return the CL-PPCRE scanner for TAG."
+  (getf html-cross-reference-regex tag))
+
+(defun html-replace-cross-reference (string start end match-start match-end group-start group-end)
+  "Call-back function for ‘cl-ppcre:regex-replace’."
+  (declare (ignorable start end))
+  (let* ((symbol (subseq string (aref group-start 1) (aref group-end 1)))
+         (items (cdr (assoc symbol html-cross-reference-alist :test #'string-equal)))
+         (item (case (length items)
+                 (0
+                  ;; No choice.
+                  nil)
+                 (1
+                  ;; Single choice.
+                  (first items))
+                 (t
+                  ;; Multiple choices.
+                  (let* ((category (or (when (aref group-start 2) ;suffix
+                                         (subseq string (aref group-start 2) (aref group-end 2)))
+                                       (when (aref group-start 0) ;prefix
+                                         (subseq string (aref group-start 0) (aref group-end 0)))))
+                         (namespace (when category
+                                      (cond ((cl-ppcre:scan (html-cross-reference-regex :package) category)
+                                             :package)
+                                            ((cl-ppcre:scan (html-cross-reference-regex :type) category)
+                                             :type)
+                                            ((cl-ppcre:scan (html-cross-reference-regex :variable) category)
+                                             :variable)
+                                            ((cl-ppcre:scan (html-cross-reference-regex :function) category)
+                                             :function)
+                                            ((cl-ppcre:scan (html-cross-reference-regex :method) category)
+                                             :method)))))
+                    (or (when namespace
+                          (if (eq namespace :method)
+                              ;; Search for the default method or fall
+                              ;; back to the generic function.
+                              (or (find-if (lambda (item)
+                                             (and (getf item :is-method)
+                                                  (null (getf item :method-qualifiers))
+                                                  (every (lambda (spec)
+                                                           (eq (getf spec :method-specializer) t))
+                                                         (getf item :method-specializers))))
+                                           items)
+                                  (find-if (lambda (item)
+                                             (getf item :is-generic-function))
+                                           items))
+                            ;; Search for a symbol in the respective
+                            ;; namespace.
+                            (find-if (lambda (item)
+                                       (string-equal (getf item :namespace) namespace))
+                                     items)))
+                        ;; Prefer functions over variables and types.
+                        (find-if (lambda (item)
+                                   (getf item :in-function-namespace))
+                                 items)
+                        (find-if (lambda (item)
+                                   (getf item :in-variable-namespace))
+                                 items)
+                        (find-if (lambda (item)
+                                   (getf item :in-type-namespace))
+                                 items)))))))
+    (if (or (null item)
+            ;; Omit self links.
+            (eq item html-cross-reference-source))
+        (subseq string match-start match-end)
+      (concatenate 'string
+                   (subseq string match-start (aref group-start 1))
+                   (with-output-to-string (stream)
+                     (html-template:fill-and-print-template
+                      html-cross-reference-template item :stream stream))
+                   (subseq string (aref group-end 1) match-end)))))
+
+(defun html-add-cross-references (string &optional item)
+  "Add cross references to a documentation string.
+
+First argument STRING is the documentation string.
+Optional second argument ITEM is the dictionary entry of the
+ documentation string, i.e. the source dictionary entry.
+
+Return value is the modified string.  Secondary value is true
+if STRING is actually modified."
+  (when (stringp string)
+    (let ((html-cross-reference-source item))
+      (cl-ppcre:regex-replace-all
+       (html-cross-reference-regex :symbol) string #'html-replace-cross-reference))))
+
 (defun html-values ()
   "HTML template values."
   (let (values)
@@ -324,7 +495,22 @@ of the generated HTML page.")
               (:documentation-tool-license ,(asdf:system-license system))
               (:documentation-tool-version ,(asdf:component-version system)))))
     ;; Make VALUES a property list.
-    (reduce #'nconc (nreverse values))))
+    (setf values (reduce #'nconc (nreverse values)))
+    ;; Resolve cross references.
+    (when *cross-references*
+      (with-html-cross-references (getf values :dictionary)
+        (multiple-value-bind (string modified)
+            (html-add-cross-references (getf values :prologue))
+          (when modified (setf (getf values :prologue) string)))
+        (multiple-value-bind (string modified)
+            (html-add-cross-references (getf values :epilogue))
+          (when modified (setf (getf values :epilogue) string)))
+        (iter (for item :in (getf values :dictionary))
+              (multiple-value-bind (string modified)
+                  (html-add-cross-references (getf item :documentation) item)
+                (when modified (setf (getf item :documentation) string))))))
+    ;; Return value.
+    values))
 
 (defun html-doc ()
   "Generate HTML."
