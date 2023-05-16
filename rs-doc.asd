@@ -42,6 +42,7 @@
   :version (:read-file-line "VERSION")
   :depends-on ("alexandria"
                "iterate"
+               "cl-ppcre"
                "closer-mop"
                "cl-environments"
                "trivial-arguments"
