@@ -53,6 +53,7 @@
   (:export #:get-doc
            #:gather-doc
            #:generate-doc
+           #:*cross-references*
            #:*lambda-list-init-form*
            #:*text-width*
            #:*text-wrap*
@@ -60,6 +61,7 @@
            #:*html-template*
            #:*html-values*
            #:*html-resources*
+           #:*html-cross-reference-template*
            ;; Export these symbols so that the user can write its own
            ;; predicate function for sorting documentation items.
            #:doc-item-category
