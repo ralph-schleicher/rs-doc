@@ -75,6 +75,9 @@ Otherwise, return ‘(rest OBJECT)’."
 (defvar *epilogue* nil
   "The epilogue (a string).")
 
+(defvar *cross-references* t
+  "Whether or not to add cross references.")
+
 (defparameter *category-alist*
   '((:package . "Package")
     ;; See ‘%typep’ function.
