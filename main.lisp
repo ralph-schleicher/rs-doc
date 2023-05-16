@@ -424,6 +424,10 @@ Keyword argument OUTPUT is the output destination.  Value is either
  Default is t.
 Keyword argument OUTPUT-FORMAT is the output file format.  Value is
  either :text or :html.  Default is to generate plain text."
+  (declare (ignorable package symbols include exclude undocumented
+                      generic-functions methods
+                      sort-predicate
+                      title subtitle prologue epilogue))
   (when (null data)
     (setf data (apply #'gather-doc arguments)))
   ;; Generate output.
