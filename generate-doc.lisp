@@ -10,6 +10,7 @@
             :symbols '(get-doc
                        gather-doc
                        generate-doc
+                       *cross-references*
                        *lambda-list-init-form*
                        *text-width*
                        *text-wrap*
