@@ -78,7 +78,7 @@ Otherwise, return ‘(rest OBJECT)’."
 (defvar *cross-references* t
   "Whether or not to add cross references.")
 
-(defparameter *category-alist*
+(defvar *category-alist*
   '((:package . "Package")
     ;; See ‘%typep’ function.
     (:condition . "Condition")
@@ -121,7 +121,7 @@ variable, or function respectively.  Otherwise, return CATEGORY."
     (t
      category)))
 
-(defparameter *namespace-alist*
+(defvar *namespace-alist*
   '((:type . "Type")
     (:variable . "Variable")
     (:function . "Function"))
@@ -263,7 +263,7 @@ and return a keyword with this name."
   (intern (apply #'concatenate 'string (mapcar #'string strings))
           (find-package :keyword)))
 
-(defparameter *use-list* (list (find-package :common-lisp))
+(defvar *use-list* (list (find-package :common-lisp))
   "List of accessible packages.")
 
 (defun %symbol-name (symbol &optional (use-list *use-list*))

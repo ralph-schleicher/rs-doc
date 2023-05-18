@@ -223,7 +223,7 @@ Examples:
                                  :method-specializers (%method-specializers method)))
                      (generic-function-methods (fdefinition symbol))))))))
 
-(defparameter *sort-order* (mapcar #'first *category-alist*)
+(defvar *sort-order* (mapcar #'first *category-alist*)
   "Order for sorting equal symbol names.")
 
 (defun compare-doc-item (a b)

@@ -35,9 +35,10 @@
 
 (in-package :rs-doc)
 
-(defparameter *html-template* (merge-pathnames
-                               #P"rs-doc.html.in"
-                               (asdf:system-source-directory :rs-doc))
+(defvar *html-template* (merge-pathnames
+                         #P"rs-doc.html.in"
+                         (load-time-value
+                          (asdf:system-source-directory :rs-doc)))
   "The HTML template file.
 
 The template file is coded up by the user.  The ‘generate-doc’
@@ -190,10 +191,10 @@ TMPL_VAR DOCUMENTATION-TOOL-LICENSE
 TMPL_VAR DOCUMENTATION-TOOL-VERSION
      Information about the documentation tool.")
 
-(defparameter *html-values* ()
+(defvar *html-values* ()
   "Additional HTML template values.")
 
-(defparameter *html-resources* ()
+(defvar *html-resources* ()
   "List of files required by the HTML template file.
 For example, CSS style sheets or image files.
 
@@ -203,7 +204,7 @@ of the generated HTML page.")
 (defun esc (object)
   (cl-who:escape-string-minimal (if (stringp object) object (str object))))
 
-(defparameter *space* " "
+(defvar *space* " "
   "Non-null separator.")
 
 (defun html-lambda-list-element (object category separatorp)

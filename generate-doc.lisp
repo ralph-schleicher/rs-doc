@@ -2,7 +2,7 @@
 
 (in-package :rs-doc-user)
 
-(defparameter *prefix* (asdf:system-source-directory "rs-doc"))
+(defvar *prefix* (asdf:system-source-directory "rs-doc"))
 
 (let ((doc (gather-doc
             :title "RS-DOC"
