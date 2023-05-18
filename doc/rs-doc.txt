@@ -165,6 +165,10 @@ generate-doc (&rest arguments &key package symbols include exclude undocumented
     either :text or :html.  Default is to generate plain text.
 
                                                               [Special Variable]
+*cross-references*
+   Whether or not to add cross references.
+
+                                                              [Special Variable]
 *lambda-list-init-form*
    Whether or not to include the initialization form
    for optional and keyword parameters.

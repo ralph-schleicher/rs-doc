@@ -65,6 +65,12 @@
       </a>
      </li>
      <li>
+      <a href="#wj5aisme">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*cross-references*</span>
+      </a>
+     </li>
+     <li>
       <a href="#tjfqsxgk">
        <span class="category">Special Variable</span>
        <span class="symbol">*lambda-list-init-form*</span>
@@ -265,11 +271,11 @@ Keyword argument PRINT-CASE is the value of ‘*print-case*’ for
  printing symbol names.
 
 Return value is a documentation data structure (a plist) suitable
-for the ‘:data’ keyword argument of the ‘generate-doc’ function.
+for the ‘:data’ keyword argument of the ‘<a href="#sd85hsxz"><span class="symbol">generate-doc</span></a>’ function.
 
 If you want to create the same documentation in different output
 formats, then you can call the ‘gather-doc’ function once and pass
-the return value to ‘generate-doc’ with different output format
+the return value to ‘<a href="#sd85hsxz"><span class="symbol">generate-doc</span></a>’ with different output format
 parameters.  For example:
 
      (let ((doc (gather-doc :package :foo)))
@@ -306,16 +312,37 @@ This may save some processing time.</pre>
 Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
  GENERIC-FUNCTIONS, METHODS, SORT-PREDICATE, TITLE, SUBTITLE,
  PROLOGUE, EPILOGUE, and PRINT-CASE are equal to the respective
- keyword argument of the ‘gather-doc’ function.  However, these
+ keyword argument of the ‘<a href="#pgzd5izp"><span class="symbol">gather-doc</span></a>’ function.  However, these
  parameters are only used if the DATA keyword argument is null.
 Keyword argument DATA is a documentation data structure as returned
- by the ‘gather-doc’ function.
+ by the ‘<a href="#pgzd5izp"><span class="symbol">gather-doc</span></a>’ function.
 Keyword argument OUTPUT is the output destination.  Value is either
  an output stream, a pathname, or a string.  A value of t is equal
  to ‘*standard-output*’ and nil means to return a new string.
  Default is t.
 Keyword argument OUTPUT-FORMAT is the output file format.  Value is
  either :text or :html.  Default is to generate plain text.</pre>
+    </div>
+   </div>
+   <div class="definition" id="wj5aisme">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*cross-references*</span></a></td>
+	<td class="lambda-list"></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Whether or not to add cross references.</pre>
     </div>
    </div>
    <div class="definition" id="tjfqsxgk">
@@ -424,7 +451,7 @@ Non-null is the number of characters.</pre>
     <div class="documentation">
      <pre>The HTML template file.
 
-The template file is coded up by the user.  The ‘generate-doc’
+The template file is coded up by the user.  The ‘<a href="#sd85hsxz"><span class="symbol">generate-doc</span></a>’
 function uses Edi Weitz's HTML-TEMPLATE library for filling in
 the documentation strings.  Below is the list of template tags
 together with their meaning.
@@ -617,7 +644,7 @@ TMPL_VAR DOCUMENTATION-TOOL-VERSION
      <pre>List of files required by the HTML template file.
 For example, CSS style sheets or image files.
 
-The ‘generate-doc’ function will copy these files into the directory
+The ‘<a href="#sd85hsxz"><span class="symbol">generate-doc</span></a>’ function will copy these files into the directory
 of the generated HTML page.</pre>
     </div>
    </div>
