@@ -34,7 +34,7 @@
 ## Code:
 
 PACKAGE := rs-doc
-VERSION := $(shell cat VERSION)
+VERSION := $(shell head -n1 VERSION)
 TARNAME := $(PACKAGE)-$(VERSION)
 
 .PHONY: all
