@@ -179,6 +179,28 @@ documentation item properties together with their meaning.
      A list of method specializers, e.g., ‘t’ or ‘(eql 0)’.
      Only meaningful for methods.
 
+:setf-function
+     Whether or not the symbol has a ‘setf’ function definition.
+     This property also applies to generic functions and methods.
+
+     A value of ‘nil’ means that no ‘setf’ function exists.
+     A value of ‘:reader’ means that a ‘setf’ function exists
+     but this documentation item does not document the ‘setf’
+     function.
+     A value of ‘:writer’ means that this is the documentation
+     item for the ‘setf’ function.
+     A value of ‘:accessor’ means that a ‘setf’ function exists
+     and this is the documentation item for both functions.
+
+:setf-lambda-list
+     The lambda list of the ‘setf’ function.  May only be
+     different from ‘:lambda-list’ for an accessor.  The
+     lambda list does not include the new value parameter.
+
+:setf-value-parameter
+     The new value parameter of a ‘setf’ function lambda
+     list.
+
 :signature
      The symbol's signature, i.e. a string of the form
      ‘CATEGORY:PACKAGE-NAME:SYMBOL-NAME’.  For methods,
@@ -587,6 +609,25 @@ TMPL_LOOP DICTIONARY
           TMPL_VAR SEPARATOR
                True if this is not the first element.  Value is a
                single space character.
+
+     TMPL_IF IS-SETF-ACCESSOR
+          True if a corresponding ‘setf’ function exists and this
+          dictionary item documents the reader and the writer.
+
+     TMPL_IF IS-SETF-READER
+          True if a corresponding ‘setf’ function exists but this
+          dictionary item documents the reader only.
+
+     TMPL_IF IS-SETF-WRITER
+          True if this dictionary item documents a ‘setf’ function.
+
+     TMPL_VAR SETF-VALUE-PARAMETER
+          The variable name of the new value parameter of the ‘setf’
+          function lambda list.
+
+     TMPL_LOOP SETF-LAMBDA-LIST
+          The symbol's ‘setf’ function lambda list.  The lambda list
+          does not include the new value parameter.
 
      TMPL_VAR DOCUMENTATION
           The documentation string itself.
