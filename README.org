@@ -1,0 +1,36 @@
+* RS-DOC
+
+Yet another documentation generator for Common Lisp.
+
+RS-DOC can create text and/or HTML output.  The HTML output is fully
+customizable by providing your own HTML template.
+
+Here is how its own documentation is generated:
+#+BEGIN_EXAMPLE lisp
+(ql:quickload "rs-doc")
+
+(in-package :rs-doc-user)
+
+(defparameter *prefix* (asdf:system-source-directory "rs-doc"))
+
+(let ((doc (gather-doc
+            :title "RS-DOC"
+            :package :rs-doc
+            :symbols '(get-doc
+                       gather-doc
+                       generate-doc
+                       *cross-references*
+                       *lambda-list-init-form*
+                       *text-width*
+                       *text-wrap*
+                       *text-indent*
+                       *html-template*
+                       *html-values*
+                       *html-resources*))))
+  (generate-doc :data doc
+                :output-format :text
+                :output (merge-pathnames #P"doc/rs-doc.txt" *prefix*))
+  (generate-doc :data doc
+                :output-format :html
+                :output (merge-pathnames #P"doc/rs-doc.html" *prefix*)))
+#+END_EXAMPLE
