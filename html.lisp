@@ -178,6 +178,25 @@ TMPL_LOOP DICTIONARY
                True if this is not the first element.  Value is a
                single space character.
 
+     TMPL_IF IS-SETF-ACCESSOR
+          True if a corresponding ‘setf’ function exists and this
+          dictionary item documents the reader and the writer.
+
+     TMPL_IF IS-SETF-READER
+          True if a corresponding ‘setf’ function exists but this
+          dictionary item documents the reader only.
+
+     TMPL_IF IS-SETF-WRITER
+          True if this dictionary item documents a ‘setf’ function.
+
+     TMPL_VAR SETF-VALUE-PARAMETER
+          The variable name of the new value parameter of the ‘setf’
+          function lambda list.
+
+     TMPL_LOOP SETF-LAMBDA-LIST
+          The symbol's ‘setf’ function lambda list.  The lambda list
+          does not include the new value parameter.
+
      TMPL_VAR DOCUMENTATION
           The documentation string itself.
 
@@ -458,6 +477,7 @@ if STRING is actually modified."
                        (for category = (get-doc-item doc :category))
                        (for package = (get-doc-item doc :package))
                        (for symbol = (get-doc-item doc :symbol))
+                       (for setf-function = (get-doc-item doc :setf-function))
                        (collect `(:id ,(make-id (get-doc-item doc :signature))
                                   :namespace ,(esc (namespace-name namespace))
                                   ,(make-keyword "IN-" namespace "-NAMESPACE") t
@@ -481,6 +501,17 @@ if STRING is actually modified."
                                             :method-specializers
                                             (html-method-specializers
                                              (get-doc-item doc :method-specializers))))
+                                  ,@(when setf-function
+                                      (list (make-keyword "IS-SETF-" setf-function) t
+                                            :setf-lambda-list
+                                            (if (eq category :method)
+                                                (html-method-lambda-list
+                                                 (get-doc-item doc :setf-lambda-list)
+                                                 (get-doc-item doc :method-specializers))
+                                              (html-lambda-list
+                                               (get-doc-item doc :setf-lambda-list)))
+                                            :setf-value-parameter
+                                            (get-doc-item doc :setf-value-parameter)))
                                   :documentation ,(esc (get-doc-item doc :documentation)))))))
       (push (list :dictionary items) values))
     (when *epilogue*
