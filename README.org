@@ -11,26 +11,84 @@ Here is how its own documentation is generated:
 
 (in-package :rs-doc-user)
 
-(defparameter *prefix* (asdf:system-source-directory "rs-doc"))
-
-(let ((doc (gather-doc
-            :title "RS-DOC"
-            :package :rs-doc
-            :symbols '(get-doc
-                       gather-doc
-                       generate-doc
-                       *cross-references*
-                       *lambda-list-init-form*
-                       *text-width*
-                       *text-wrap*
-                       *text-indent*
-                       *html-template*
-                       *html-values*
-                       *html-resources*))))
-  (generate-doc :data doc
-                :output-format :text
-                :output (merge-pathnames #P"doc/rs-doc.txt" *prefix*))
-  (generate-doc :data doc
-                :output-format :html
-                :output (merge-pathnames #P"doc/rs-doc.html" *prefix*)))
+(let ((data (gather-doc
+             :title "RS-DOC"
+             :package :rs-doc
+             :symbols '(get-doc
+                        gather-doc
+                        generate-doc
+                        *cross-references*
+                        *lambda-list-init-form*
+                        *text-width*
+                        *text-wrap*
+                        *text-indent*
+                        *html-template*
+                        *html-values*
+                        *html-resources*)))
+      (doc-dir (merge-pathnames
+                (make-pathname :directory '(:relative "doc"))
+                (asdf:system-source-directory "rs-doc"))))
+  (generate-doc
+   :data data
+   :output-format :html
+   :output (merge-pathnames (uiop:parse-unix-namestring "rs-doc.html") doc-dir))
+  (generate-doc
+   :data data
+   :output-format :text
+   :output (merge-pathnames (uiop:parse-unix-namestring "rs-doc.txt") doc-dir)))
 #+END_EXAMPLE
+
+Generating documentation for Common Lisp packages or systems can be
+split into two steps: documentation extraction and documentation
+generation.
+
+Documentation extraction means to fetch the documentation of code
+objects, e.g. types, variables, and functions, from Common Lisp code.
+The nice thing is that the designers of Lisp decided that Lisp shall
+be self-documenting.  Thus, documentation is a built-in property of
+Lisp code objects and the ‘documentation’ function is the gateway to
+extract this information in Common Lisp.  However, the programmer has
+to add the documentation to the code objects in the first place.  In
+RS-DOC, documentation extraction is performed by the ‘get-doc’
+function.
+#+BEGIN_EXAMPLE lisp
+(get-doc 'pi)
+ ⇒ ((:namespace :variable
+     :category :constant
+     :package #<PACKAGE "COMMON-LISP">
+     :symbol pi
+     :documentation nil
+     :signature "CONSTANT:COMMON-LISP:PI"))
+#+END_EXAMPLE
+The ‘get-doc’ function returns the documentation, here ‘nil’, together
+with some meta-data about the code object.  Here is another example:
+#+BEGIN_EXAMPLE lisp
+(get-doc 'print-object)
+ ⇒ ((:namespace :function
+     :category :generic-function
+     :package #<PACKAGE "COMMON-LISP">
+     :symbol print-object
+     :documentation nil
+     :lambda-list (object stream)
+     :signature "GENERIC-FUNCTION:COMMON-LISP:PRINT-OBJECT")
+    (:namespace :function
+     :category :method
+     :package #<PACKAGE "COMMON-LISP">
+     :symbol print-object
+     :documentation nil
+     :lambda-list ((object symbol) stream)
+     :method-qualifiers nil
+     :method-specializers (symbol t)
+     :signature "METHOD:COMMON-LISP:PRINT-OBJECT (SYMBOL T)")
+    ...)
+#+END_EXAMPLE
+RS-DOC provides a ‘gather-doc’ function which, more or less, calls
+‘get-doc’ for all external symbols of a package.  The collected data
+can be passed to the second step, documentation generation.
+
+Documentation generation means to convert the documentation into a
+readable format for the user.  The data package from the documentation
+extraction step should provide enough information to the documentation
+generation process so that no further inspection of the code objects
+is required.  RS-DOC provides a ‘generate-doc’ function which can
+create text or HTML output.
