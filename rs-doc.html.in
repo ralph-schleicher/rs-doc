@@ -59,8 +59,8 @@
      <!-- TMPL_LOOP DICTIONARY -->
      <li>
       <a href="#<!-- TMPL_VAR ID -->">
-       <span class="category"><!-- TMPL_VAR CATEGORY --></span>
-       <span class="symbol"><!-- TMPL_VAR SYMBOL --></span>
+       <span class="category"><!-- TMPL_IF IS-SETF-ACCESSOR -->Accessor&nbsp;<!-- /TMPL_IF --><!-- TMPL_VAR CATEGORY --></span>
+       <span class="symbol"><!-- TMPL_IF IS-SETF-WRITER -->(setf&nbsp;<!-- /TMPL_IF --><!-- TMPL_VAR SYMBOL --><!-- TMPL_IF IS-SETF-WRITER -->)<!-- /TMPL_IF --></span>
        <!-- TMPL_IF METHOD-SPECIALIZERS -->
        <span class="method-specializers">(<!-- TMPL_LOOP METHOD-SPECIALIZERS --><!-- TMPL_VAR SEPARATOR --><span class="method-specializer"><!-- TMPL_VAR METHOD-SPECIALIZER --></span><!-- /TMPL_LOOP -->)</span>
        <!-- /TMPL_IF -->
@@ -84,9 +84,9 @@
       </colgroup>
       <tbody>
        <tr>
-	<td class="symbol"><a href="#contents"><span class="symbol"><!-- TMPL_VAR SYMBOL --></span></a></td>
+	<td class="symbol"><a href="#contents"><span class="symbol"><!-- TMPL_IF IS-SETF-WRITER -->(setf&nbsp;<!-- /TMPL_IF --><!-- TMPL_VAR SYMBOL --><!-- TMPL_IF IS-SETF-WRITER -->)<!-- /TMPL_IF --></span></a></td>
 	<td class="lambda-list"><!-- TMPL_IF IN-FUNCTION-NAMESPACE --><span class="lambda-list">(<!-- TMPL_LOOP LAMBDA-LIST --><!-- TMPL_VAR SEPARATOR --><!-- TMPL_IF IS-KEYWORD --><span class="lambda-list-keyword"><!-- TMPL_VAR KEYWORD --></span><!-- TMPL_ELSE --><!-- TMPL_IF IS-PARAMETER --><!-- TMPL_IF METHOD-SPECIALIZER -->(<span class="variable"><!-- TMPL_VAR VARIABLE --></span>&nbsp;<span class="method-specializer"><!-- TMPL_VAR METHOD-SPECIALIZER --></span>)<!-- TMPL_ELSE --><!-- TMPL_IF INIT-FORM -->(<!-- /TMPL_IF --><span class="variable"><!-- TMPL_VAR VARIABLE --></span><!-- TMPL_IF INIT-FORM -->&nbsp;<span class="init-form"><!-- TMPL_VAR INIT-FORM --></span>)<!-- /TMPL_IF --><!-- /TMPL_IF --><!-- TMPL_ELSE --><!-- TMPL_IF IS-LAMBDA-LIST -->(<!-- TMPL_LOOP LAMBDA-LIST --><!-- TMPL_VAR SEPARATOR --><!-- TMPL_IF IS-KEYWORD --><span class="lambda-list-keyword"><!-- TMPL_VAR KEYWORD --></span><!-- TMPL_ELSE --><!-- TMPL_IF IS-PARAMETER --><!-- TMPL_IF METHOD-SPECIALIZER -->(<span class="variable"><!-- TMPL_VAR VARIABLE --></span>&nbsp;<span class="method-specializer"><!-- TMPL_VAR METHOD-SPECIALIZER --></span>)<!-- TMPL_ELSE --><!-- TMPL_IF INIT-FORM -->(<!-- /TMPL_IF --><span class="variable"><!-- TMPL_VAR VARIABLE --></span><!-- TMPL_IF INIT-FORM -->&nbsp;<span class="init-form"><!-- TMPL_VAR INIT-FORM --></span>)<!-- /TMPL_IF --><!-- /TMPL_IF --><!-- TMPL_ELSE --><!-- TMPL_IF IS-LAMBDA-LIST -->(<!-- TMPL_LOOP LAMBDA-LIST --><!-- TMPL_VAR SEPARATOR --><!-- TMPL_IF IS-KEYWORD --><span class="lambda-list-keyword"><!-- TMPL_VAR KEYWORD --></span><!-- TMPL_ELSE --><!-- TMPL_IF IS-PARAMETER --><!-- TMPL_IF METHOD-SPECIALIZER -->(<span class="variable"><!-- TMPL_VAR VARIABLE --></span>&nbsp;<span class="method-specializer"><!-- TMPL_VAR METHOD-SPECIALIZER --></span>)<!-- TMPL_ELSE --><!-- TMPL_IF INIT-FORM -->(<!-- /TMPL_IF --><span class="variable"><!-- TMPL_VAR VARIABLE --></span><!-- TMPL_IF INIT-FORM -->&nbsp;<span class="init-form"><!-- TMPL_VAR INIT-FORM --></span>)<!-- /TMPL_IF --><!-- /TMPL_IF --><!-- TMPL_ELSE --><!-- TMPL_IF IS-LAMBDA-LIST -->(<span class="error">error: too deep nesting of inner lambda list</span>)<!-- TMPL_ELSE -->(<span class="error">error: should not happen</span>)<!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_LOOP -->)<!-- TMPL_ELSE -->(<span class="error">error: should not happen</span>)<!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_LOOP -->)<!-- TMPL_ELSE -->(<span class="error">error: should not happen</span>)<!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_LOOP -->)</span><!-- /TMPL_IF --></td>
-	<td class="category"><span class="category"><!-- TMPL_VAR CATEGORY --></span></td>
+	<td class="category"><span class="category"><!-- TMPL_IF IS-SETF-ACCESSOR -->Accessor&nbsp;<!-- /TMPL_IF --><!-- TMPL_VAR CATEGORY --></span></td>
        </tr>
       </tbody>
      </table>
