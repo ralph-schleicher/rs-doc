@@ -93,10 +93,16 @@ Non-null is the number of characters.")
         (terpri))
       (iter (for doc :in *dictionary*)
             (for category = (doc-item-category doc))
+            (for category-name = (category-name category))
+            (when (eq (get-doc-item doc :setf-function) :accessor)
+              (setf category-name (concatenate 'string "Accessor " category-name)))
             (for symbol = (doc-item-symbol doc))
+            (when (eq (get-doc-item doc :setf-function) :writer)
+              ;; The setf function name of a symbol S the list ‘(setf S)’.
+              (setf symbol `(setf ,symbol)))
             (new-paragraph)
             (format t "~V<[~A]~>~%~A~:[~; ~:A~]~%"
-                    *text-width* (category-name category) symbol
+                    *text-width* category-name symbol
                     (eq (namespace category) :function)
                     (text-lambda-list
                      (get-doc-item doc :lambda-list)
