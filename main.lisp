@@ -74,9 +74,14 @@
       (first (member (function-information symbol)
                      '(:special-form :macro :function)))))
 
-(defun %function-lambda-list (function &optional recursivep)
-  "Return the lambda list for function object FUNCTION."
-  (canonical-lambda-list (trivial-arguments:arglist function) recursivep))
+(defun %function-lambda-list (symbol &optional recursivep)
+  "Return the lambda list of the SYMBOL function."
+  ;; The function object.
+  (let ((function #+(or sbcl clozure)
+                  symbol ;a function designator
+                  #-(or sbcl clozure)
+                  (fdefinition symbol)))
+    (canonical-lambda-list (trivial-arguments:arglist function) recursivep)))
 
 (defun %method-qualifiers (method)
   "Return the method qualifiers for method object METHOD."
@@ -162,6 +167,28 @@ documentation item properties together with their meaning.
      A list of method specializers, e.g., ‘t’ or ‘(eql 0)’.
      Only meaningful for methods.
 
+:setf-function
+     Whether or not the symbol has a ‘setf’ function definition.
+     This property also applies to generic functions and methods.
+
+     A value of ‘nil’ means that no ‘setf’ function exists.
+     A value of ‘:reader’ means that a ‘setf’ function exists
+     but this documentation item does not document the ‘setf’
+     function.
+     A value of ‘:writer’ means that this is the documentation
+     item for the ‘setf’ function.
+     A value of ‘:accessor’ means that a ‘setf’ function exists
+     and this is the documentation item for both functions.
+
+:setf-lambda-list
+     The lambda list of the ‘setf’ function.  May only be
+     different from ‘:lambda-list’ for an accessor.  The
+     lambda list does not include the new value parameter.
+
+:setf-value-parameter
+     The new value parameter of a ‘setf’ function lambda
+     list.
+
 :signature
      The symbol's signature, i.e. a string of the form
      ‘CATEGORY:PACKAGE-NAME:SYMBOL-NAME’.  For methods,
@@ -201,27 +228,134 @@ Examples:
      (list (make-doc category symbol (documentation symbol 'type))))
    (when-let ((category (%variablep symbol)))
      (list (make-doc category symbol (documentation symbol 'variable))))
-   (when-let ((category (%functionp symbol)))
-     (cons (make-doc category symbol (documentation symbol 'function)
-                     :lambda-list (%function-lambda-list
-                                   #+(or sbcl clozure)
-                                   symbol ;a function designator
-                                   #-(or sbcl clozure)
-                                   (fdefinition symbol)
-                                   (eq category :macro)))
-           ;; TODO: Only return methods where the specialized lambda
-           ;; list contains types listed in *SYMBOLS*.  Add an option
-           ;; whether or not to include the generic function when the
-           ;; number of methods is greater than zero.
-           (when (eq category :generic-function)
-             (mapcar (lambda (method)
-                       (make-doc :method symbol
-                                 (or (documentation method t)
-                                     (documentation symbol 'function))
-                                 :lambda-list (%method-lambda-list method)
-                                 :method-qualifiers (%method-qualifiers method)
-                                 :method-specializers (%method-specializers method)))
-                     (generic-function-methods (fdefinition symbol))))))))
+   (let* ((reader-symbol symbol)
+          (reader (%functionp reader-symbol))
+          (writer-symbol `(setf ,symbol))
+          (writer (%functionp writer-symbol)))
+     (when-let ((category (or reader writer)))
+       (when (and reader writer (not (eq reader writer)))
+         (fixme))
+       (nconc
+        ;; First the function, macro, special form, or generic function.
+        (let (reader-documentation reader-lambda-list
+              writer-documentation writer-lambda-list writer-value-parameter)
+          (when reader
+            (setf reader-documentation (documentation reader-symbol 'function)
+                  reader-lambda-list (%function-lambda-list reader-symbol (eq category :macro))))
+          (when writer
+            (setf writer-documentation (documentation writer-symbol 'function))
+            ;; Remove the new value parameter from the lambda list of
+            ;; the ‘setf’ function.
+            (let ((lambda-list (%function-lambda-list writer-symbol)))
+              (setf writer-lambda-list (rest lambda-list)
+                    writer-value-parameter (first lambda-list))))
+          (cond ((not writer)
+                 ;; A regular function, macro, or special form.
+                 (list (make-doc category symbol reader-documentation
+                                 :lambda-list reader-lambda-list)))
+                ((not reader)
+                 ;; A ‘setf’ function only.
+                 (list (make-doc category symbol writer-documentation
+                                 :lambda-list writer-lambda-list
+                                 :setf-function :writer
+                                 :setf-lambda-list writer-lambda-list
+                                 :setf-value-parameter writer-value-parameter)))
+                ((not writer-documentation)
+                 (list (make-doc category symbol reader-documentation
+                                 :lambda-list reader-lambda-list
+                                 :setf-function :accessor
+                                 :setf-lambda-list writer-lambda-list
+                                 :setf-value-parameter writer-value-parameter)))
+                ;; An accessor with individual documentation strings
+                ;; for the reader and the writer.
+                ((list (make-doc category symbol reader-documentation
+                                 :lambda-list reader-lambda-list
+                                 :setf-function :reader)
+                       (make-doc category symbol writer-documentation
+                                 :lambda-list writer-lambda-list
+                                 :setf-function :writer
+                                 :setf-lambda-list writer-lambda-list
+                                 :setf-value-parameter writer-value-parameter)))))
+        ;; Now the methods.
+        ;;
+        ;; TODO: Only return methods where the specialized lambda
+        ;; list contains types listed in *SYMBOLS*.  Add an option
+        ;; whether or not to include the generic function when the
+        ;; number of methods is greater than zero.
+        (when (eq category :generic-function)
+          (let* ((reader-methods (mapcar (lambda (method)
+                                           (list method
+                                                 (%method-qualifiers method)
+                                                 (%method-specializers method)))
+                                         (generic-function-methods
+                                          (fdefinition reader-symbol))))
+                 (writer-methods (mapcar (lambda (method)
+                                           (list method
+                                                 (%method-qualifiers method)
+                                                 ;; Ignore the specializer of
+                                                 ;; the new value parameter.
+                                                 (rest (%method-specializers method))))
+                                         (generic-function-methods
+                                          (fdefinition writer-symbol))))
+                 ;; Accessor methods.
+                 (reader-methods* (intersection
+                                   reader-methods writer-methods
+                                   :key #'rest :test #'equal))
+                 (writer-methods* (intersection
+                                   writer-methods reader-methods
+                                   :key #'rest :test #'equal))
+                 ;; Any writers?
+                 (writerp (not (null writer-methods))))
+            ;; Filter out the accessor methods.
+            (setf reader-methods (nset-difference
+                                  reader-methods reader-methods*
+                                  :key #'first :test #'eq)
+                  writer-methods (nset-difference
+                                  writer-methods writer-methods*
+                                  :key #'first :test #'eq))
+            (nconc
+             (mapcar (lambda (list)
+                       (destructuring-bind (method qualifiers specializers) list
+                         (make-doc :method symbol
+                                   (or (documentation method t)
+                                       ;; Documentation of the generic function.
+                                       (when (not qualifiers)
+                                         (documentation reader-symbol 'function)))
+                                   :lambda-list (%method-lambda-list method)
+                                   :method-qualifiers qualifiers
+                                   :method-specializers specializers
+                                   :setf-function (when writerp :reader))))
+                     reader-methods)
+             (mapcar (lambda (list)
+                       (destructuring-bind (method qualifiers specializers) list
+                         (let ((lambda-list (%method-lambda-list method)))
+                           (make-doc :method symbol
+                                     (or (documentation method t)
+                                         (when (not qualifiers)
+                                           (documentation writer-symbol 'function)))
+                                     :lambda-list (rest lambda-list)
+                                     :method-qualifiers qualifiers
+                                     :method-specializers specializers
+                                     :setf-function :writer
+                                     :setf-lambda-list (rest lambda-list)
+                                     :setf-value-parameter (first lambda-list)))))
+                     writer-methods)
+             (mapcar (lambda (list)
+                       (destructuring-bind (reader-method qualifiers specializers) list
+                         (let* ((writer-method (first (find (rest list) writer-methods*
+                                                            :key #'rest :test #'equal)))
+                                (writer-lambda-list (%method-lambda-list writer-method)))
+                           (make-doc :method symbol
+                                     (or (documentation reader-method t)
+                                         (when (not qualifiers)
+                                           (documentation reader-symbol 'function)))
+                                     :lambda-list (%method-lambda-list reader-method)
+                                     :method-qualifiers qualifiers
+                                     :method-specializers specializers
+                                     :setf-function :accessor
+                                     :setf-lambda-list (rest writer-lambda-list)
+                                     :setf-value-parameter (first writer-lambda-list)))))
+                     reader-methods*)))))))))
 
 (defvar *sort-order* (mapcar #'first *category-alist*)
   "Order for sorting equal symbol names.")
