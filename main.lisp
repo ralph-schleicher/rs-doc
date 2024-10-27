@@ -398,20 +398,20 @@ Keyword argument INCLUDE is a list of additionals symbols to be
  documented.
 Keyword argument EXCLUDE is a list of symbols not to be documented.
 Keyword argument UNDOCUMENTED determines whether or not to document
- undocumented symbols.  A value of nil means to exclude undocumented
+ undocumented symbols.  A value of ’nil‘ means to exclude undocumented
  symbols.  Any other value means to include undocumented symbols.  If
  the value is a string, it will be used as the documentation string.
  Otherwise, use the string ‘Not documented.’.  Default is to exclude
  undocumented symbols.
 Keyword argument GENERIC-FUNCTIONS determines whether or not to
- document generic functions.  A value of t means to include all
- generic functions, nil means to exclude all generic functions, a
+ document generic functions.  A value of ‘t’ means to include all
+ generic functions, ‘nil’ means to exclude all generic functions, a
  list of symbols means to include the listed generic functions, a
  list starting with the symbol ‘not’ means to exclude the listed
  generic functions.  Default is to include all generic functions.
 Keyword argument METHODS determines whether or not to document
- methods.  A value of t means to include all methods, nil means to
- exclude all methods, a list of symbols means to include the listed
+ methods.  A value of ‘t’ means to include all methods, ‘nil’ means
+ to exclude all methods, a list of symbols means to include the listed
  methods, a list starting with the symbol ‘not’ means to exclude the
  listed methods.  Default is to include all methods.
 Keyword argument SORT-PREDICATE is a predicate function for sorting
@@ -553,11 +553,11 @@ Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
 Keyword argument DATA is a documentation data structure as returned
  by the ‘gather-doc’ function.
 Keyword argument OUTPUT is the output destination.  Value is either
- an output stream, a pathname, or a string.  A value of t is equal
- to ‘*standard-output*’ and nil means to return a new string.
- Default is t.
+ an output stream, a pathname, or a string.  A value of ‘t’ is equal
+ to ‘*standard-output*’ and ‘nil’ means to return a new string.
+ Default is ‘t’.
 Keyword argument OUTPUT-FORMAT is the output file format.  Value is
- either :text or :html.  Default is to generate plain text."
+ either ‘:text’ or ‘:html’.  Default is to generate plain text."
   (declare (ignorable package symbols include exclude undocumented
                       generic-functions methods
                       sort-predicate
