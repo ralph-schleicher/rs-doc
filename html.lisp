@@ -35,6 +35,9 @@
 
 (in-package :rs-doc)
 
+(defvar *html-pathname-type* "html"
+  "The default file type for HTML files.")
+
 (defvar *html-template* (merge-pathnames
                          #P"rs-doc.html.in"
                          (load-time-value
