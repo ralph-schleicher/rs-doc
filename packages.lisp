@@ -55,9 +55,11 @@
            #:generate-doc
            #:*cross-references*
            #:*lambda-list-init-form*
+           #:*text-pathname-type*
            #:*text-width*
            #:*text-wrap*
            #:*text-indent*
+           #:*html-pathname-type*
            #:*html-template*
            #:*html-values*
            #:*html-resources*
@@ -72,6 +74,10 @@
 (defpackage #:de.ralph-schleicher.documentation-user
   (:nicknames :rs-doc-user)
   (:use :common-lisp
-        :rs-doc))
+        :rs-doc)
+  (:export #:rs-doc)
+  (:documentation "User package for RS-DOC.
+
+All exported symbols of the RS-DOC package are available in this package."))
 
 ;;; packages.lisp ends here
