@@ -35,6 +35,9 @@
 
 (in-package :rs-doc)
 
+(defvar *text-pathname-type* "txt"
+  "The default file type for text files.")
+
 (defvar *text-width* 80
   "The text width.  Value has to be at least 40.")
 
