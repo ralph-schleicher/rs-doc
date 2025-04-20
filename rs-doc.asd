@@ -56,6 +56,7 @@
                (:file "common")
                (:file "text")
                (:file "html")
-               (:file "main")))
+               (:file "main")
+               (:file "user")))
 
 ;;; rs-doc.asd ends here
