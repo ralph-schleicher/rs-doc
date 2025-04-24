@@ -283,20 +283,22 @@ Examples:
         ;; whether or not to include the generic function when the
         ;; number of methods is greater than zero.
         (when (eq category :generic-function)
-          (let* ((reader-methods (mapcar (lambda (method)
-                                           (list method
-                                                 (%method-qualifiers method)
-                                                 (%method-specializers method)))
-                                         (generic-function-methods
-                                          (fdefinition reader-symbol))))
-                 (writer-methods (mapcar (lambda (method)
-                                           (list method
-                                                 (%method-qualifiers method)
-                                                 ;; Ignore the specializer of
-                                                 ;; the new value parameter.
-                                                 (rest (%method-specializers method))))
-                                         (generic-function-methods
-                                          (fdefinition writer-symbol))))
+          (let* ((reader-methods (when reader
+                                   (mapcar (lambda (method)
+                                             (list method
+                                                   (%method-qualifiers method)
+                                                   (%method-specializers method)))
+                                           (generic-function-methods
+                                            (fdefinition reader-symbol)))))
+                 (writer-methods (when writer
+                                   (mapcar (lambda (method)
+                                             (list method
+                                                   (%method-qualifiers method)
+                                                   ;; Ignore the specializer of
+                                                   ;; the new value parameter.
+                                                   (rest (%method-specializers method))))
+                                           (generic-function-methods
+                                            (fdefinition writer-symbol)))))
                  ;; Accessor methods.
                  (reader-methods* (intersection
                                    reader-methods writer-methods
