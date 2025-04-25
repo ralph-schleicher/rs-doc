@@ -47,6 +47,12 @@
    <div class="contents-listing">
     <ul>
      <li>
+      <a href="#atnegip7">
+       <span class="category">Function</span>
+       <span class="symbol">rs-doc</span>
+      </a>
+     </li>
+     <li>
       <a href="#hcjj54xm">
        <span class="category">Function</span>
        <span class="symbol">get-doc</span>
@@ -77,6 +83,12 @@
       </a>
      </li>
      <li>
+      <a href="#feoj4z4j">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*text-pathname-type*</span>
+      </a>
+     </li>
+     <li>
       <a href="#x28je4dv">
        <span class="category">Special Variable</span>
        <span class="symbol">*text-width*</span>
@@ -92,6 +104,12 @@
       <a href="#q4rqzul8">
        <span class="category">Special Variable</span>
        <span class="symbol">*text-indent*</span>
+      </a>
+     </li>
+     <li>
+      <a href="#s2l2sfrk">
+       <span class="category">Special Variable</span>
+       <span class="symbol">*html-pathname-type*</span>
       </a>
      </li>
      <li>
@@ -116,6 +134,43 @@
    </div>
   </div>
   <div class="dictionary">
+   <div class="definition" id="atnegip7">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">rs-doc</span></a></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">options</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">title</span> <span class="variable">package</span> <span class="variable">name</span> <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
+	<td class="category"><span class="category">Function</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>Create the documentation files for a package.
+
+Keyword arguments TITLE, PACKAGE, and NAME specify the title, package,
+ and output file name respectively.  If the PACKAGE keyword argument
+ is ‘nil’, attempt to infer the package name from the TITLE keyword
+ argument.  If the NAME keyword argument is ‘nil’, use the lowercase
+ package name as the output file name.
+
+The ‘rs-doc’ function calls ‘<a href="#pgzd5izp"><span class="symbol">gather-doc</span></a>’ with all arguments.  Then
+it generates the package documentation in text and HTML file format.
+The user can bind the ‘*default-pathname-defaults*’ special variable
+to specify the destination, e.g. the directory, for the output files.
+The ‘<a href="#feoj4z4j"><span class="symbol">*text-pathname-type*</span></a>’ and ‘<a href="#s2l2sfrk"><span class="symbol">*html-pathname-type*</span></a>’ special
+variables provide the file type for the respective file format.
+
+Return value is the documentation data structure as returned by the
+‘<a href="#pgzd5izp"><span class="symbol">gather-doc</span></a>’ function.</pre>
+    </div>
+   </div>
    <div class="definition" id="hcjj54xm">
     <div class="signature">
      <table class="signature">
@@ -248,7 +303,7 @@ Examples:
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">gather-doc</span></a></td>
-	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> <span class="variable">generic-functions</span> <span class="variable">methods</span> <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> <span class="variable">print-case</span> <span class="lambda-list-keyword">&amp;allow-other-keys</span>)</span></td>
 	<td class="category"><span class="category">Function</span></td>
        </tr>
       </tbody>
@@ -265,20 +320,20 @@ Keyword argument INCLUDE is a list of additionals symbols to be
  documented.
 Keyword argument EXCLUDE is a list of symbols not to be documented.
 Keyword argument UNDOCUMENTED determines whether or not to document
- undocumented symbols.  A value of nil means to exclude undocumented
+ undocumented symbols.  A value of ’nil‘ means to exclude undocumented
  symbols.  Any other value means to include undocumented symbols.  If
  the value is a string, it will be used as the documentation string.
  Otherwise, use the string ‘Not documented.’.  Default is to exclude
  undocumented symbols.
 Keyword argument GENERIC-FUNCTIONS determines whether or not to
- document generic functions.  A value of t means to include all
- generic functions, nil means to exclude all generic functions, a
+ document generic functions.  A value of ‘t’ means to include all
+ generic functions, ‘nil’ means to exclude all generic functions, a
  list of symbols means to include the listed generic functions, a
  list starting with the symbol ‘not’ means to exclude the listed
  generic functions.  Default is to include all generic functions.
 Keyword argument METHODS determines whether or not to document
- methods.  A value of t means to include all methods, nil means to
- exclude all methods, a list of symbols means to include the listed
+ methods.  A value of ‘t’ means to include all methods, ‘nil’ means
+ to exclude all methods, a list of symbols means to include the listed
  methods, a list starting with the symbol ‘not’ means to exclude the
  listed methods.  Default is to include all methods.
 Keyword argument SORT-PREDICATE is a predicate function for sorting
@@ -322,7 +377,7 @@ This may save some processing time.</pre>
       <tbody>
        <tr>
 	<td class="symbol"><a href="#contents"><span class="symbol">generate-doc</span></a></td>
-	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">arguments</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> (<span class="variable">generic-functions</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">methods</span>&nbsp;<span class="init-form">t</span>) <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> (<span class="variable">print-case</span>&nbsp;<span class="init-form">:downcase</span>) <span class="variable">data</span> (<span class="variable">output</span>&nbsp;<span class="init-form">t</span>) (<span class="variable">output-format</span>&nbsp;<span class="init-form">:text</span>))</span></td>
+	<td class="lambda-list"><span class="lambda-list">(<span class="lambda-list-keyword">&amp;rest</span> <span class="variable">arguments</span> <span class="lambda-list-keyword">&amp;key</span> <span class="variable">package</span> <span class="variable">symbols</span> <span class="variable">include</span> <span class="variable">exclude</span> <span class="variable">undocumented</span> <span class="variable">generic-functions</span> <span class="variable">methods</span> <span class="variable">sort-predicate</span> <span class="variable">title</span> <span class="variable">subtitle</span> <span class="variable">prologue</span> <span class="variable">epilogue</span> <span class="variable">print-case</span> <span class="variable">data</span> <span class="variable">output</span> <span class="variable">output-format</span>)</span></td>
 	<td class="category"><span class="category">Function</span></td>
        </tr>
       </tbody>
@@ -339,11 +394,11 @@ Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
 Keyword argument DATA is a documentation data structure as returned
  by the ‘<a href="#pgzd5izp"><span class="symbol">gather-doc</span></a>’ function.
 Keyword argument OUTPUT is the output destination.  Value is either
- an output stream, a pathname, or a string.  A value of t is equal
- to ‘*standard-output*’ and nil means to return a new string.
- Default is t.
+ an output stream, a pathname, or a string.  A value of ‘t’ is equal
+ to ‘*standard-output*’ and ‘nil’ means to return a new string.
+ Default is ‘t’.
 Keyword argument OUTPUT-FORMAT is the output file format.  Value is
- either :text or :html.  Default is to generate plain text.</pre>
+ either ‘:text’ or ‘:html’.  Default is to generate plain text.</pre>
     </div>
    </div>
    <div class="definition" id="wj5aisme">
@@ -387,6 +442,27 @@ Keyword argument OUTPUT-FORMAT is the output file format.  Value is
     <div class="documentation">
      <pre>Whether or not to include the initialization form
 for optional and keyword parameters.</pre>
+    </div>
+   </div>
+   <div class="definition" id="feoj4z4j">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*text-pathname-type*</span></a></td>
+	<td class="lambda-list"></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>The default file type for text files.</pre>
     </div>
    </div>
    <div class="definition" id="x28je4dv">
@@ -451,6 +527,27 @@ for optional and keyword parameters.</pre>
     <div class="documentation">
      <pre>Whether or not to indent the documentation.
 Non-null is the number of characters.</pre>
+    </div>
+   </div>
+   <div class="definition" id="s2l2sfrk">
+    <div class="signature">
+     <table class="signature">
+      <colgroup>
+       <col />
+       <col />
+       <col />
+      </colgroup>
+      <tbody>
+       <tr>
+	<td class="symbol"><a href="#contents"><span class="symbol">*html-pathname-type*</span></a></td>
+	<td class="lambda-list"></td>
+	<td class="category"><span class="category">Special Variable</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="documentation">
+     <pre>The default file type for HTML files.</pre>
     </div>
    </div>
    <div class="definition" id="mbj2msi2">

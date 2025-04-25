@@ -3,6 +3,26 @@ RS-DOC
 Yet another documentation generator.
 
                                                                       [Function]
+rs-doc (&rest options &key title package name &allow-other-keys)
+   Create the documentation files for a package.
+
+   Keyword arguments TITLE, PACKAGE, and NAME specify the title, package,
+    and output file name respectively.  If the PACKAGE keyword argument
+    is ‘nil’, attempt to infer the package name from the TITLE keyword
+    argument.  If the NAME keyword argument is ‘nil’, use the lowercase
+    package name as the output file name.
+
+   The ‘rs-doc’ function calls ‘gather-doc’ with all arguments.  Then
+   it generates the package documentation in text and HTML file format.
+   The user can bind the ‘*default-pathname-defaults*’ special variable
+   to specify the destination, e.g. the directory, for the output files.
+   The ‘*text-pathname-type*’ and ‘*html-pathname-type*’ special
+   variables provide the file type for the respective file format.
+
+   Return value is the documentation data structure as returned by the
+   ‘gather-doc’ function.
+
+                                                                      [Function]
 get-doc (symbol)
    Return all documentation items for SYMBOL as a list.
    A symbol can have multiple definitions.  For each definition,
@@ -107,9 +127,9 @@ get-doc (symbol)
             ...)
 
                                                                       [Function]
-gather-doc (&key package symbols include exclude undocumented
-            (generic-functions t) (methods t) sort-predicate title subtitle
-            prologue epilogue (print-case :downcase) &allow-other-keys)
+gather-doc (&key package symbols include exclude undocumented generic-functions
+            methods sort-predicate title subtitle prologue epilogue print-case
+            &allow-other-keys)
    Gather documentation for Lisp symbols.
 
    Keyword argument PACKAGE denotes a package.  Value is either a string
@@ -120,20 +140,20 @@ gather-doc (&key package symbols include exclude undocumented
     documented.
    Keyword argument EXCLUDE is a list of symbols not to be documented.
    Keyword argument UNDOCUMENTED determines whether or not to document
-    undocumented symbols.  A value of nil means to exclude undocumented
+    undocumented symbols.  A value of ’nil‘ means to exclude undocumented
     symbols.  Any other value means to include undocumented symbols.  If
     the value is a string, it will be used as the documentation string.
     Otherwise, use the string ‘Not documented.’.  Default is to exclude
     undocumented symbols.
    Keyword argument GENERIC-FUNCTIONS determines whether or not to
-    document generic functions.  A value of t means to include all
-    generic functions, nil means to exclude all generic functions, a
+    document generic functions.  A value of ‘t’ means to include all
+    generic functions, ‘nil’ means to exclude all generic functions, a
     list of symbols means to include the listed generic functions, a
     list starting with the symbol ‘not’ means to exclude the listed
     generic functions.  Default is to include all generic functions.
    Keyword argument METHODS determines whether or not to document
-    methods.  A value of t means to include all methods, nil means to
-    exclude all methods, a list of symbols means to include the listed
+    methods.  A value of ‘t’ means to include all methods, ‘nil’ means
+    to exclude all methods, a list of symbols means to include the listed
     methods, a list starting with the symbol ‘not’ means to exclude the
     listed methods.  Default is to include all methods.
    Keyword argument SORT-PREDICATE is a predicate function for sorting
@@ -167,9 +187,8 @@ gather-doc (&key package symbols include exclude undocumented
 
                                                                       [Function]
 generate-doc (&rest arguments &key package symbols include exclude undocumented
-              (generic-functions t) (methods t) sort-predicate title subtitle
-              prologue epilogue (print-case :downcase) data (output t)
-              (output-format :text))
+              generic-functions methods sort-predicate title subtitle prologue
+              epilogue print-case data output output-format)
    Generate documentation for Lisp symbols.
 
    Keyword arguments PACKAGE, SYMBOLS, INCLUDE, EXCLUDE,
@@ -180,11 +199,11 @@ generate-doc (&rest arguments &key package symbols include exclude undocumented
    Keyword argument DATA is a documentation data structure as returned
     by the ‘gather-doc’ function.
    Keyword argument OUTPUT is the output destination.  Value is either
-    an output stream, a pathname, or a string.  A value of t is equal
-    to ‘*standard-output*’ and nil means to return a new string.
-    Default is t.
+    an output stream, a pathname, or a string.  A value of ‘t’ is equal
+    to ‘*standard-output*’ and ‘nil’ means to return a new string.
+    Default is ‘t’.
    Keyword argument OUTPUT-FORMAT is the output file format.  Value is
-    either :text or :html.  Default is to generate plain text.
+    either ‘:text’ or ‘:html’.  Default is to generate plain text.
 
                                                               [Special Variable]
 *cross-references*
@@ -194,6 +213,10 @@ generate-doc (&rest arguments &key package symbols include exclude undocumented
 *lambda-list-init-form*
    Whether or not to include the initialization form
    for optional and keyword parameters.
+
+                                                              [Special Variable]
+*text-pathname-type*
+   The default file type for text files.
 
                                                               [Special Variable]
 *text-width*
@@ -207,6 +230,10 @@ generate-doc (&rest arguments &key package symbols include exclude undocumented
 *text-indent*
    Whether or not to indent the documentation.
    Non-null is the number of characters.
+
+                                                              [Special Variable]
+*html-pathname-type*
+   The default file type for HTML files.
 
                                                               [Special Variable]
 *html-template*
