@@ -33,26 +33,28 @@
 
 ;;; Code:
 
-(in-package :rs-doc-user)
+(in-package :rs-doc)
 
-(defun rs-doc (&rest options &key package title name &allow-other-keys)
+(defun rs-doc (&rest options &key title package name &allow-other-keys)
   "Create the documentation files for a package.
 
-Keyword arguments PACKAGE, TITLE, and NAME specify the package, title,
+Keyword arguments TITLE, PACKAGE, and NAME specify the title, package,
  and output file name respectively.  If the PACKAGE keyword argument
  is ‘nil’, attempt to infer the package name from the TITLE keyword
  argument.  If the NAME keyword argument is ‘nil’, use the lowercase
  package name as the output file name.
 
-Call ‘gather-doc’ with all arguments.  Then generate the package
-documentation in text and HTML file format.
+The ‘rs-doc’ function calls ‘gather-doc’ with all arguments.  Then
+it generates the package documentation in text and HTML file format.
+The user can bind the ‘*default-pathname-defaults*’ special variable
+to specify the destination, e.g. the directory, for the output files.
+The ‘*text-pathname-type*’ and ‘*html-pathname-type*’ special
+variables provide the file type for the respective file format.
 
-The user can bind ‘*default-pathname-defaults*’ to specify the
-destination for the output files.  The ‘*text-pathname-type*’ and
-‘*html-pathname-type*’ special variables provide the file type for
-the respective file format."
-  (check-type package (or package symbol string null))
+Return value is the documentation data structure as returned by the
+‘gather-doc’ function."
   (check-type title (or string null))
+  (check-type package (or package symbol string null))
   (check-type name (or string null))
   ;; The package designator.
   (when (null package)
@@ -67,18 +69,17 @@ the respective file format."
                   (string package)))))
   ;; Remove captured keyword arguments.
   (dolist (key '(:package :name))
-    (loop (when (not (remf options key))
-            (return))))
+    (iter (while (remf options key))))
   ;; Create the documentation files.
   (let ((data (apply #'gather-doc :package package options)))
     (generate-doc
      :data data
      :output-format :text
-     :output (make-pathname :name name :type *text-pathname-type*))
+     :output (make-pathname :name name :type *text-pathname-type* :defaults *default-pathname-defaults*))
     (generate-doc
      :data data
      :output-format :html
-     :output (make-pathname :name name :type *html-pathname-type*))
+     :output (make-pathname :name name :type *html-pathname-type* :defaults *default-pathname-defaults*))
     data))
 
 ;;; user.lisp ends here
