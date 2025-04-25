@@ -50,7 +50,8 @@
   (:import-from #:cl-environments
                 #:variable-information
                 #:function-information)
-  (:export #:get-doc
+  (:export #:rs-doc
+           #:get-doc
            #:gather-doc
            #:generate-doc
            #:*cross-references*
@@ -75,7 +76,6 @@
   (:nicknames :rs-doc-user)
   (:use :common-lisp
         :rs-doc)
-  (:export #:rs-doc)
   (:documentation "User package for RS-DOC.
 
 All exported symbols of the RS-DOC package are available in this package."))
