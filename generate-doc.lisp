@@ -39,31 +39,21 @@
 
 (in-package :rs-doc-user)
 
-(let ((data (gather-doc
-             :title "RS-DOC"
-             :package :rs-doc
-             :symbols '(get-doc
-                        gather-doc
-                        generate-doc
-                        *cross-references*
-                        *lambda-list-init-form*
-                        *text-width*
-                        *text-wrap*
-                        *text-indent*
-                        *html-template*
-                        *html-values*
-                        *html-resources*)))
-      (doc-dir (merge-pathnames
-                (make-pathname :directory '(:relative "doc"))
-                (asdf:system-source-directory "rs-doc"))))
-  (generate-doc
-   :data data
-   :output-format :html
-   :output (merge-pathnames (uiop:parse-unix-namestring "rs-doc.html") doc-dir))
-  (generate-doc
-   :data data
-   :output-format :text
-   :output (merge-pathnames (uiop:parse-unix-namestring "rs-doc.txt") doc-dir))
-  ())
+(let ((*default-pathname-defaults* (asdf:system-relative-pathname "rs-doc" "doc/")))
+  (rs-doc :title "RS-DOC"
+          :symbols '(rs-doc
+                     get-doc
+                     gather-doc
+                     generate-doc
+                     *cross-references*
+                     *lambda-list-init-form*
+                     *text-pathname-type*
+                     *text-width*
+                     *text-wrap*
+                     *text-indent*
+                     *html-pathname-type*
+                     *html-template*
+                     *html-values*
+                     *html-resources*)))
 
 ;;; generate-doc.lisp ends here
